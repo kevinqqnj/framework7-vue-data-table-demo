@@ -13,6 +13,19 @@ Your custom styles go here
 	right:-1em;
 	top: -2.2em;
 }
-.md .navbar+.toolbar:not(.toolbar-bottom-md):not(.messagebar) {
-  top: 56px;
+.fa-layers-counter {
+    height: 1.1em;
+    right: -0.3em;
+    font-size: 1.7em;
 }
+/*.md .navbar+.toolbar:not(.toolbar-bottom-md):not(.messagebar) {
+  top: 56px;
+}*/
+.md .navbar.navbar-hidden+.toolbar:not(.toolbar-bottom-md):not(.messagebar) {
+    -webkit-transform: translate3d(0,-64px,0);
+    transform: translate3d(0,-64px,0);
+    }
+.md .data-table td, .md .data-table th {
+    padding-left: 3px;
+    padding-right: 3px;
+  }

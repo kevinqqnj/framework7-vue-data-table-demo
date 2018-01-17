@@ -4,7 +4,7 @@ export default [
         component: require('./pages/panel-left.vue')
     },
     {
-        path: '/',
+        path: '/index/',
         component: require('./pages/index.vue'),
         tabs: [{
                 path: '/',
