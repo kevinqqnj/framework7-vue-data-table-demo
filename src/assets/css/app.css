@@ -1,0 +1,18 @@
+/* =========
+Your custom styles go here
+ ========= */
+.fa-badge-lg {
+	right:0.8em;
+	top: -0.7em;
+}
+.fa-badge-2x {
+	right:0.5em;
+	top: -1.3em;
+}
+.fa-badge-tab-2x {
+	right:-1em;
+	top: -2.2em;
+}
+.md .navbar+.toolbar:not(.toolbar-bottom-md):not(.messagebar) {
+  top: 56px;
+}
