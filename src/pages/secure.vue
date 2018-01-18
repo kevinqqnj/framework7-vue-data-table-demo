@@ -1,13 +1,22 @@
 <template>
     <div>
-        <f7-block-title>With title and different actions on select</f7-block-title>
-        <f7-list inline-labels no-hairlines-md>
+        <f7-list :inline-labels="$device.desktop" no-hairlines-md>
+            <f7-list-item>
+                <f7-label>保种员: 剩余空间
+                    <f7-badge color="green">1.0TB</f7-badge>
+                </f7-label>
+                <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+            </f7-list-item>
+            <f7-list-item>
+                <f7-label>过滤种子:</f7-label>
+                <f7-input type="select" v-model="display_sr_selected">
+                    <option v-for="(sr, index) in display_info" :value="index">{{sr}}</option>
+                </f7-input>
+            </f7-list-item>
             <f7-list-item>
                 <f7-label>
-                    已选中：
-                    <f7-badge color="blue">{{ vuetable.selectedTo.length==0?'-':vuetable.selectedTo.length }}</f7-badge>
-                    总大小：
-                    <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1)+' GB' }}</f7-badge>
+                    已选中: <f7-badge color="blue">{{ vuetable.selectedTo.length==0?'-':vuetable.selectedTo.length }}</f7-badge>
+                    总大小 <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1)+' GB' }}</f7-badge>
                 </f7-label>
                 <f7-input type="text" placeholder="已选择的种子ID列表" v-model="vuetable.selectedTo" disabled />
             </f7-list-item>
@@ -15,99 +24,115 @@
         <div class="data-table data-table-init card">
             <div class="card-header">
                 <div class="data-table-header">
-                    <!-- <div class="data-table-title">Nutrition</div> -->
-                    <div class="data-table-links">
+                    <span class="text-color-gray">选择种子认领/分配/报错，点击种子打开详情</span>
+                    <div<!-- class="data-table-links">
                         <a class="link">认 领</a><a class="link">分 配</a>
-                    </div>
-                    <div class="data-table-actions">
-                        <f7-link icon="fas fa-filter fa-lg text-color-red"></f7-link>
-                        <f7-link icon="fas fa-sync fa-lg"></f7-link>
-                    </div>
-                </div>
-                <div class="data-table-header-selected">
-                    <div class="data-table-title-selected"><span class="data-table-selected-count"></span> items selected</div>
-                    <div class="data-table-actions">
-                        <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange"> 报错</f7-link>
-                        <f7-link icon="fas fa-ellipsis-v fa-lg"></f7-link>
-                    </div>
+                </div> -->
+                <div class="data-table-actions">
+                    <f7-link icon="fas fa-filter fa-lg text-color-red"></f7-link>
+                    <f7-link icon="fas fa-sync fa-lg"></f7-link>
                 </div>
             </div>
-            <div class="card-content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="checkbox-cell">
-                                <f7-checkbox @change="check_all_click" :checked="check_all_checked" />
-                            </th>
-                            <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
-                                {{item.title}}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in querydata.data" :key="item.id">
-                            <td class="checkbox-cell">
-                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="index in vuetable.selectedIndex"/>
-                            </td>
-                            <td class="numeric-cell" :class="(item.is_faulty) ? 'bg-color-orange' : '' " :title="item.faults">
-                                <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
-                            </td>
-                            <td class="numeric-cell">{{ item.size_f }}</td>
-                            <td class="numeric-cell">{{ item.seeds }}</td>
-                            <td class="numeric-cell">
-                                <div @click="quick_action(item.id, item.securer_assigned, 'undo')" v-html="srsToIcon(item.securer_assigned)"></div>
-                            </td>
-                            <td class="numeric-cell">
-                                <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div>
-                            </td>
-                            <td class="numeric-cell">
-                                <div @click="quick_action(item.id, item.self_downloaded, 'active-assign')" v-html="srsToIcon(item.self_downloaded)"></div>
-                            </td>
-                            <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
-                            <td class="numeric-cell" v-html="strToInput(item.title)"></td>
-                            <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
-                            <td class="numeric-cell">{{ item.download_size }}</td>
-                            <td class="numeric-cell">{{ item.download_duration }}</td>
-                            <td class="numeric-cell">{{ item.seeding_duration }}</td>
-                            <td class="numeric-cell">{{ item.upload_size }}</td>
-                            <td class="numeric-cell">{{ item.finishes }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="data-table-header-selected">
+                <div class="data-table-title-selected">
+                    <f7-row>
+                        <f7-col>
+                            <f7-button fill>撤 销</f7-button>
+                        </f7-col>
+                        <f7-col>
+                            <f7-button fill>认 领</f7-button>
+                        </f7-col>
+                        <f7-col>
+                            <f7-button fill color="orange">分 配</f7-button>
+                        </f7-col>
+                    </f7-row>
+                    </f7-segmented>
+                </div>
+                <div class="data-table-actions">
+                    <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange" title="汇报错误"></f7-link>
+                    <f7-link icon="fas fa-ellipsis-v fa-lg"></f7-link>
+                </div>
             </div>
         </div>
-        <f7-popover class="popover-menu" id="pop-undo">
-            <f7-list>
-                undo assign
-                <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_as" :key="index">
+        <div class="card-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell" title="反选">
+                            <label class="checkbox">
+                                <input type="checkbox"><i class="fas fa-adjust fa-lg" color=""></i>
+                            </label>
+                            <!-- <f7-checkbox /> -->
+                        </th>
+                        <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
+                            {{item.title}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in querydata.data" :key="item.id">
+                        <td class="checkbox-cell">
+                            <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
+                        </td>
+                        <td class="numeric-cell" :class="(item.is_faulty) ? 'bg-color-orange' : '' " :title="item.faults">
+                            <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
+                        </td>
+                        <td class="numeric-cell">{{ item.size_f }}</td>
+                        <td class="numeric-cell">{{ item.seeds }}</td>
+                        <td class="numeric-cell">
+                            <div @click="quick_action(item.id, item.securer_assigned, 'undo')" v-html="srsToIcon(item.securer_assigned)"></div>
+                        </td>
+                        <td class="numeric-cell">
+                            <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div>
+                        </td>
+                        <td class="numeric-cell">
+                            <div @click="quick_action(item.id, item.self_downloaded, 'active-assign')" v-html="srsToIcon(item.self_downloaded)"></div>
+                        </td>
+                        <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
+                        <td class="numeric-cell" v-html="strToInput(item.title)"></td>
+                        <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
+                        <td class="numeric-cell">{{ item.download_size }}</td>
+                        <td class="numeric-cell">{{ item.download_duration }}</td>
+                        <td class="numeric-cell">{{ item.seeding_duration }}</td>
+                        <td class="numeric-cell">{{ item.upload_size }}</td>
+                        <td class="numeric-cell">{{ item.finishes }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <f7-popover class="popover-menu" id="pop-undo">
+        <f7-list>
+            undo assign
+            <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_as" :key="index">
                       <f7-label >
                       <a href="#" @click="action_go(action_data.id, sr, 'activate-undo', index, -1)">
                           <i class="fa fa-undo fa-border color-red pull-right"> 撤销</i></a>
                       </f7-label>
                   </f7-list-item> -->
-            </f7-list>
-        </f7-popover>
-        <f7-popover class="popover-menu" id="pop-assign">
-            <f7-list>
-                assign task
-                <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_se" :key="index">
+        </f7-list>
+    </f7-popover>
+    <f7-popover class="popover-menu" id="pop-assign">
+        <f7-list>
+            assign task
+            <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_se" :key="index">
                       <f7-label >
                       <a href="#" @click="action_go(action_data.id, sr, 'activate', -1, index)">
                           <i class="fa fa-paper-plane-o fa-border color-orange pull-right"> 分配</i></a>
                       </f7-label>
                   </f7-list-item> -->
-            </f7-list>
-        </f7-popover>
-        <f7-popover class="popover-menu" id="pop-ob-id">
-            <f7-list>
-                <f7-list-item link="/form/" popover-close title="Forms"></f7-list-item>
-                <f7-list-item link="#" popover-close :title="'ID: '+seed_selected" @click.native="pop_menu"></f7-list-item>
-                <f7-list-item link="#" popover-close>
-                    <f7-link href="http://www.baidu.com" external target="_blank">External</f7-link>
-                </f7-list-item>
-                <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
-            </f7-list>
-        </f7-popover>
+        </f7-list>
+    </f7-popover>
+    <f7-popover class="popover-menu" id="pop-ob-id">
+        <f7-list>
+            <f7-list-item link="/form/" popover-close title="Forms"></f7-list-item>
+            <f7-list-item link="#" popover-close :title="'ID: '+seed_selected" @click.native="pop_menu"></f7-list-item>
+            <f7-list-item link="#" popover-close>
+                <f7-link href="http://www.baidu.com" external target="_blank">External</f7-link>
+            </f7-list-item>
+            <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
+        </f7-list>
+    </f7-popover>
     </div>
 </template>
 <script>
@@ -124,6 +149,8 @@ export default {
                 selectedIndex: [], // index of checkboxs
             },
             check_all_checked: false, // 全选按键
+            display_info: ['所有未分配的', '保种员认领但没分配的', '组长已分配但没认领的', '所有已分配的', '所有已认领的', '断种的官种', '报错的官种', '已有做种信息的', '有做种但未认领分配的', '已认领但无需下载的', '做种数少且仅分配1人的'],
+            display_sr_selected: 0,
             fields: [{
                     name: 'id',
                     title: '种子ID',
@@ -388,30 +415,29 @@ export default {
     },
     methods: {
         check_click(index, id, size) {
-            // if (!this.check_all_checked) {
-            //     this.vuetable.selectedTo.length = 0
-            //     this.vuetable.selectedTotalSize = 0
-            // }
             if (this.vuetable.selectedTo.indexOf(id) > -1) {
+                // de-select row
                 this.vuetable.selectedTo.splice(this.vuetable.selectedTo.indexOf(id), 1)
                 this.vuetable.selectedIndex.splice(this.vuetable.selectedIndex.indexOf(index), 1)
                 this.vuetable.selectedTotalSize -= size
+                // this.check_all_checked = false
             } else {
+                // if (!(id in this.vuetable.selectedTo)) {
                 this.vuetable.selectedTo.push(id)
                 this.vuetable.selectedIndex.push(index)
                 this.vuetable.selectedTotalSize += size
+                // }
             }
             // console.log(JSON.stringify(this.vuetable))
         },
         check_all_click() {
             this.check_all_checked = !this.check_all_checked
-            // console.log(this.check_all_checked)
-            if (this.vuetable.selectedTo.length > 0 && this.check_all_checked) {
-                this.vuetable.selectedIndex.forEach((checkbox, index, array) => {
-                    document.getElementById('check_' + checkbox).click()
-                    console.log(JSON.stringify(this.vuetable.selectedTo) + ' Click: check_' + checkbox)
-                })
-            }
+            // if (this.check_all_checked) {
+            //     this.vuetable.selectedIndex.length = 0
+            //     this.vuetable.selectedTo.length = 0
+            //     this.vuetable.selectedTotalSize = 0
+            //   }
+            //         this.vuetable.selectedIndex = [...Array(this. querydata.data.length)].map((v,k) => k)
         },
         pop_menu() {
             console.log('popover menu clicked')
