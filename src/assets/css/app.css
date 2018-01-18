@@ -29,3 +29,7 @@ Your custom styles go here
     padding-left: 3px;
     padding-right: 3px;
   }
+.md .dialog-buttons-vertical .dialog-buttons .dialog-button {
+	    text-transform: none;
+	    text-align: center;
+}
