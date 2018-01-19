@@ -10,7 +10,7 @@
             </f7-nav-right>
             <f7-searchbar class="searchbar-components" search-container=".components-list" search-in="a" expandable></f7-searchbar>
         </f7-navbar>
-        <f7-toolbar tabbar style="background: rgba(33, 168, 243, 1);">
+        <f7-toolbar tabbar style="background: rgba(33, 168, 243, 1);" :class="$device.desktop?'':'toolbar-bottom-md'">
             <a href="./" class="tab-link" data-route-tab-id="tab1">
               <i class="icon fas fa-home fa-2x"></i>
               <!-- <span class="tabbar-label">Home</span> -->

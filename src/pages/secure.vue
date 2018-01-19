@@ -1,6 +1,7 @@
 <template>
     <div>
-        <f7-list :inline-labels="$device.desktop" no-hairlines-md>
+        <f7-list inline-labels no-hairlines-md>
+            <!-- :inline-labels="$device.desktop"  -->
             <f7-list-item>
                 <f7-label>保种员: 剩余空间
                     <f7-badge color="green">1.0TB</f7-badge>
@@ -8,34 +9,46 @@
                 <f7-input type="text" placeholder="Your name" clear-button></f7-input>
             </f7-list-item>
             <f7-list-item>
-                <f7-label>已选中:
-                    <span v-show="vuetable.selectedIndex.length>0"><f7-badge color="blue">{{ vuetable.selectedTo.length }}</f7-badge> 种子
-                    <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1) }}</f7-badge>GB</span>
+                <f7-label>保种记录:
+                    <f7-badge color="green">1.0TB</f7-badge>
                 </f7-label>
-                <f7-input type="text" placeholder="已选择的种子ID列表" v-model="vuetable.selectedTo" disabled />
-    			<f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
+                <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+            </f7-list-item>
+            <f7-list-item>
+                <f7-label>手动输入种子</f7-label>
+                <f7-input type="checkbox">
+                    <f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
+                </f7-input>
             </f7-list-item>
             <f7-list-item v-show="manual_input_ob">
-                <f7-label>手动输入种子ID: </f7-label>
+                <f7-label>请输入种子ID: </f7-label>
                 <f7-input type="text" placeholder="以空格 / 逗号 / 回车隔开的种子ID列表" v-model="manual_ob_list" />
             </f7-list-item>
         </f7-list>
-        <f7-block v-show="manual_input_ob">
+        <f7-block>
             <f7-row>
                 <f7-col>
-                    <f7-button fill :disabled="manual_ob_list==''">撤 销</f7-button>
+                    <f7-button fill>撤 销
+                        <i class="fas fa-undo" /></f7-button>
                 </f7-col>
                 <f7-col>
-                    <f7-button fill :disabled="manual_ob_list==''">认 领</f7-button>
+                    <f7-button fill>认 领
+                        <i class="fas fa-check-square" /></f7-button>
                 </f7-col>
                 <f7-col>
-                    <f7-button fill :disabled="manual_ob_list==''" color="orange">分 配</f7-button>
+                    <f7-button fill color="orange">分 配
+                        <i class="fas fa-paper-plane" /></f7-button>
+                </f7-col>
+                <f7-col>
+                    <f7-button fill>刷 新
+                        <i class="fas fa-sync" /></f7-button>
                 </f7-col>
             </f7-row>
         </f7-block>
+        <!-- Filters for query 过滤器 -->
         <f7-block>
             <f7-row class="data-table-actions">
-                <f7-col v-for="(filter, key, index) in filters_all" :key="index">
+                <f7-col width="50" tablet-width="20" v-for="(filter, key, index) in filters_all" :key="index">
                     <f7-link popover-open="#pop-filter" @click="filter_open(key)">
                         {{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
                 </f7-col>
@@ -44,29 +57,19 @@
         <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
-                    <span class="text-color-gray">选择种子认领/分配/报错，点击种子打开详情</span>
+                    <!-- pagination 页面信息 -->
+                    <span class="text-color-gray">{{querydata.from}}-{{querydata.to}} of {{querydata.total}}</span>
                     <div class="data-table-actions">
-<f7-link @click="page_jump_open()">{{querydata.from}}-{{querydata.to}} of {{querydata.total}} 
-	<i class="fas fa-chevron-left fa-fw"></i>
-	 {{querydata.current_page }}/{{querydata.last_page}} 
-	 <i class="fas fa-chevron-right fa-fw"></i></f7-link>
-                        <f7-button fill href="#">刷 新 <i class="fas fa-sync fa-fw"></i></f7-button>
+                        <f7-button @click="query_data_from_api(querydata.current_page-1)" :class="querydata.current_page==1? 'text-color-gray':''" icon="fas fa-chevron-left" />
+                        <f7-button popover-open="#pop-paging" href="#">{{querydata.current_page}} / {{querydata.last_page}}</f7-button>
+                        <f7-button @click="query_data_from_api(querydata.current_page+1)" :class="querydata.current_page==querydata.last_page? 'text-color-gray':''" icon="fas fa-chevron-right" />
                     </div>
                 </div>
                 <div class="data-table-header-selected">
                     <div class="data-table-title-selected">
-                        <f7-row>
-                            <f7-col>
-                                <f7-button fill>撤 销</f7-button>
-                            </f7-col>
-                            <f7-col>
-                                <f7-button fill>认 领</f7-button>
-                            </f7-col>
-                            <f7-col>
-                                <f7-button fill color="orange">分 配</f7-button>
-                            </f7-col>
-                        </f7-row>
-                        </f7-segmented>
+                        已选中:
+                        <f7-badge color="blue">{{ vuetable.selectedTo.length }}</f7-badge> 种子
+                        <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1) }}</f7-badge>GB
                     </div>
                     <div class="data-table-actions">
                         <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange" title="汇报错误"></f7-link>
@@ -74,17 +77,12 @@
                     </div>
                 </div>
             </div>
-            <f7-progressbar infinite v-show="vuetable.selectedIndex.length>0"></f7-progressbar>
-            
+            <f7-progressbar infinite v-show="progress_bar"></f7-progressbar>
             <div class="card-content">
                 <table>
                     <thead>
                         <tr>
                             <th class="checkbox-cell" title="反选/全选">
-                                <!-- <label class="checkbox">
-                                <input type="checkbox"><i class="fas fa-adjust fa-lg" color=""></i>
-              <f7-checkbox @change="check_all_change" :checked="vuetable.selectedIndex.length==querydata.data.length" />
-                            </label>-->
                                 <f7-checkbox />
                             </th>
                             <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
@@ -129,28 +127,23 @@
                 </table>
             </div>
         </div>
-        <f7-popover class="popover-menu" id="pop-filter">
+        <f7-popover class="popover-menu popover-max-height" id="pop-filter">
             <f7-list>
-                <f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked="index==filter_data.selected" name="radio_group_filter" class="popover-close" />
+                <f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked="index==filter_data.selected" name="radio_group_filter" class="popover-close" @change="filter_select(filter_data.current_filter, index)" />
             </f7-list>
         </f7-popover>
-        <f7-popover class="popover-menu" id="pop-action">
+        <f7-popover class="popover-menu popover-max-height" id="pop-action">
             <f7-list>
                 <f7-list-item :title="sr.ob_username ? sr.ob_username : sr" v-for="(sr, index) in action_data.data" :key="index" class="popover-close">
-                    <f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" />
-                    <f7-link v-show="action_data.type=='assign'" icon="far fa-paper-plane fa-pull-right color-blue" @click="" />
+                    <f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" title="快速撤销分配" />
+                    <f7-link v-show="action_data.type=='assign'" icon="fas fa-paper-plane fa-pull-right color-blue" @click="" title="快速分配种子" />
                 </f7-list-item>
             </f7-list>
         </f7-popover>
-        <f7-popover class="popover-menu" id="pop-assign">
+        <f7-popover class="popover-menu popover-max-height" id="pop-paging">
             <f7-list>
-                assign task
-                <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_se" :key="index">
-                      <f7-label >
-                      <a href="#" @click="action_go(action_data.id, sr, 'activate', -1, index)">
-                          <i class="fa fa-paper-plane-o fa-border color-orange pull-right"> 分配</i></a>
-                      </f7-label>
-                  </f7-list-item> -->
+                <f7-list-item link="#" :title="sr" v-for="(sr, index) in querydata.last_page" :key="index" class="popover-close" @click="query_data_from_api(sr)" :class="querydata.current_page==sr ? 'bg-color-blue' : ''">
+                </f7-list-item>
             </f7-list>
         </f7-popover>
         <f7-popover class="popover-menu" id="pop-ob-id">
@@ -163,6 +156,7 @@
                 <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
             </f7-list>
         </f7-popover>
+        <f7-block-title>选择种子来认领/分配/报错 点击种子打开详情 点击表头排序</f7-block-title>
     </div>
 </template>
 <script>
@@ -182,6 +176,7 @@ export default {
             check_all_checked: false, // 全选按键
             manual_input_ob: false,
             manual_ob_list: '',
+            progress_bar: false, // when getting data from server
             filters_all: {
                 display_info: {
                     title: '',
@@ -209,7 +204,7 @@ export default {
                     selected: 1,
                 },
             },
-            filter_data: { data: [], selected: 0 },
+            filter_data: { data: [], selected: 0, current_filter: '' },
             display_sr_selected: 0,
             fields: [{
                     name: 'id',
@@ -456,7 +451,6 @@ export default {
                 "to": 5,
                 "total": 221
             },
-
         }
     },
     filters: {
@@ -465,19 +459,37 @@ export default {
         }
     },
     mounted() {
-        this.$axios.get('/user?ID=12345')
-            .then(function(response) {
-                console.log(response);
-            })
-            .catch(function(response) {
-                console.log(response);
-            });
+        this.query_data_from_api(1)
     },
     computed: {
+        pagination() {
+            let current_page = this.querydata.current_page
+            let last_page = this.querydata.last_page
+            return {
+                title: ['首页', 2, 3, 4, 5, '尾页'],
+                page: [...Array(last_page)].map((v, k) => k + 1)
+            }
+        },
     },
     methods: {
-    	page_jump_open() {
-    	},
+        query_data_from_api(page) {
+            if (this.querydata.current_page == 1 && page < 1) return this.querydata.current_page = 1
+            if (this.querydata.current_page == this.querydata.last_page && page > this.querydata.last_page) return this.querydata.current_page = this.querydata.last_page
+            this.progress_bar = true
+            this.querydata.current_page = page
+            this.$axios.get('/api/query_assign_task/' + page)
+                .then((response) => {
+                    console.log(response);
+                    this.progress_bar = false
+                })
+                .catch((response) => {
+                    setTimeout(() => {
+                        console.log(response);
+                        this.progress_bar = false
+                    }, 1000)
+
+                });
+        },
         check_click(index, id, size) {
             if (this.vuetable.selectedTo.indexOf(id) > -1) {
                 // de-select row
@@ -523,7 +535,11 @@ export default {
             this.filter_data = {
                 data: this.filters_all[filter].data,
                 selected: this.filters_all[filter].selected,
+                current_filter: filter,
             }
+        },
+        filter_select(filter, index) {
+            this.filters_all[filter].selected = index
         },
         pop_menu() {
             console.log('popover menu clicked')

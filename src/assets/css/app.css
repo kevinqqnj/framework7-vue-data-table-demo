@@ -25,6 +25,7 @@ Your custom styles go here
     -webkit-transform: translate3d(0,-64px,0);
     transform: translate3d(0,-64px,0);
     }
+/*表格紧凑    */
 .md .data-table td, .md .data-table th {
     padding-left: 3px;
     padding-right: 3px;
@@ -33,7 +34,11 @@ Your custom styles go here
 	    text-transform: none;
 	    text-align: center;
 }
+/*取消自动转换成大写*/
 .data-table-actions .link {
 	    text-transform: none;
 	    }
-	    
+/*popover如果菜单过长，则显示滚动条      */
+.popover-max-height .popover-inner{
+      max-height: 90vh;
+}
