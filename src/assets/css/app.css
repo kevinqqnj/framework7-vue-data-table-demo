@@ -39,6 +39,7 @@ Your custom styles go here
 	    text-transform: none;
 	    }
 /*popover如果菜单过长，则显示滚动条      */
-.popover-max-height .popover-inner{
+.popover-max-height .popover-inner {
       max-height: 90vh;
 }
+

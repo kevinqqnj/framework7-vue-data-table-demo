@@ -6,19 +6,20 @@
                 <f7-label>保种员: 剩余空间
                     <f7-badge color="green">1.0TB</f7-badge>
                 </f7-label>
-                <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+                <f7-button popover-open="#pop-paging" href="#">{{querydata.current_page}} / {{querydata.last_page}}</f7-button>
+                <!-- <f7-input type="text" placeholder="Your name" clear-button></f7-input> -->
             </f7-list-item>
             <f7-list-item>
-                <f7-label>保种记录:
+                <f7-label>保种记录(最大3TB):</f7-label>
+                <f7-label>分配200
                     <f7-badge color="green">1.0TB</f7-badge>
+                    <f7-progressbar color="green" :progress="20" class="my-progressbar"></f7-progressbar>
                 </f7-label>
-                <f7-input type="text" placeholder="Your name" clear-button></f7-input>
-            </f7-list-item>
-            <f7-list-item>
-                <f7-label>手动输入种子</f7-label>
-                <f7-input type="checkbox">
-                    <f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
-                </f7-input>
+                <f7-label>认领200
+                    <f7-badge color="green">1.0TB</f7-badge>
+                    <f7-progressbar color="red" :progress="80"></f7-progressbar>
+                </f7-label>
+                <f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
             </f7-list-item>
             <f7-list-item v-show="manual_input_ob">
                 <f7-label>请输入种子ID: </f7-label>
@@ -77,7 +78,6 @@
                     </div>
                 </div>
             </div>
-            <f7-progressbar infinite v-show="progress_bar"></f7-progressbar>
             <div class="card-content">
                 <table>
                     <thead>
@@ -176,7 +176,6 @@ export default {
             check_all_checked: false, // 全选按键
             manual_input_ob: false,
             manual_ob_list: '',
-            progress_bar: false, // when getting data from server
             filters_all: {
                 display_info: {
                     title: '',
@@ -475,17 +474,17 @@ export default {
         query_data_from_api(page) {
             if (this.querydata.current_page == 1 && page < 1) return this.querydata.current_page = 1
             if (this.querydata.current_page == this.querydata.last_page && page > this.querydata.last_page) return this.querydata.current_page = this.querydata.last_page
-            this.progress_bar = true
+            this.$f7.progressbar.show('yellow');
             this.querydata.current_page = page
             this.$axios.get('/api/query_assign_task/' + page)
                 .then((response) => {
                     console.log(response);
-                    this.progress_bar = false
+                    this.$f7.progressbar.hide()
                 })
                 .catch((response) => {
                     setTimeout(() => {
                         console.log(response);
-                        this.progress_bar = false
+                        this.$f7.progressbar.hide()
                     }, 1000)
 
                 });
