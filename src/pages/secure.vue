@@ -9,8 +9,8 @@
             </f7-list-item>
             <f7-list-item>
                 <f7-label>过滤种子:</f7-label>
-                <f7-input type="select" v-model="display_sr_selected">
-                    <option v-for="(sr, index) in display_info" :value="index">{{sr}}</option>
+                <f7-input type="select" v-model="filter_data.selected">
+                    <option v-for="(sr, index) in filter_data.data" :value="index">{{sr}}</option>
                 </f7-input>
             </f7-list-item>
             <f7-list-item>
@@ -20,17 +20,21 @@
                 </f7-label>
                 <f7-input type="text" placeholder="已选择的种子ID列表" v-model="vuetable.selectedTo" disabled />
             </f7-list-item>
-        </f7-list>
+        	</f7-list>
+        <f7-block>
+    <f7-row class="data-table-actions">
+                        <f7-col v-for="(filter, key, index) in filters_all" :key="index">
+    <f7-link popover-open="#pop-filter" @click="filter_open(key)">
+	{{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
+    				</f7-col>
+    </f7-row>
+    </f7-block>
         <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
                     <span class="text-color-gray">选择种子认领/分配/报错，点击种子打开详情</span>
-                    <div<!-- class="data-table-links">
-                        <a class="link">认 领</a><a class="link">分 配</a>
-                </div> -->
                 <div class="data-table-actions">
-                    <f7-link icon="fas fa-filter fa-lg text-color-red"></f7-link>
-                    <f7-link icon="fas fa-sync fa-lg"></f7-link>
+                    <f7-link icon="fas fa-sync fa-fw" href="#"> 刷新</f7-link>
                 </div>
             </div>
             <div class="data-table-header-selected">
@@ -75,19 +79,24 @@
                         <td class="checkbox-cell">
                             <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
                         </td>
-                        <td class="numeric-cell" :class="(item.is_faulty) ? 'bg-color-orange' : '' " :title="item.faults">
+                        <td class="numeric-cell" :title="item.faults">
+                        	<i class="fas fa-exclamation-triangle" color="orange" v-if="item.is_faulty" />
                             <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
                         </td>
                         <td class="numeric-cell">{{ item.size_f }}</td>
                         <td class="numeric-cell">{{ item.seeds }}</td>
                         <td class="numeric-cell">
-                            <div @click="quick_action(item.id, item.securer_assigned, 'undo')" v-html="srsToIcon(item.securer_assigned)"></div>
+                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'undo', -1, item.securer_assigned)">
+                        	<span v-html="srsToIcon(item.securer_assigned)"></span></f7-link>
                         </td>
                         <td class="numeric-cell">
-                            <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div>
+                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.securer_accepted)">
+                        	<span v-html="srsToIcon(item.securer_accepted)"></span></f7-link>
+                            <!-- <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div> -->
                         </td>
                         <td class="numeric-cell">
-                            <div @click="quick_action(item.id, item.self_downloaded, 'active-assign')" v-html="srsToIcon(item.self_downloaded)"></div>
+                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.self_downloaded)">
+                        	<span v-html="srsToIcon(item.self_downloaded)"></span></f7-link>
                         </td>
                         <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
                         <td class="numeric-cell" v-html="strToInput(item.title)"></td>
@@ -102,17 +111,22 @@
             </table>
         </div>
     </div>
-    <f7-popover class="popover-menu" id="pop-undo">
+     <f7-popover class="popover-menu" id="pop-filter">
+	<f7-list>
+		<f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked= "index==filter_data.selected" 
+							name="radio_group_filter" class="popover-close" />
+	    </f7-list>
+    </f7-popover>
+    						
+	<f7-popover class="popover-menu" id="pop-action">
         <f7-list>
-            undo assign
-            <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_as" :key="index">
-                      <f7-label >
-                      <a href="#" @click="action_go(action_data.id, sr, 'activate-undo', index, -1)">
-                          <i class="fa fa-undo fa-border color-red pull-right"> 撤销</i></a>
-                      </f7-label>
-                  </f7-list-item> -->
+          <f7-list-item :title="sr.ob_username ? sr.ob_username : sr" v-for="(sr, index) in action_data.data" :key="index" class="popover-close">
+				<f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" />
+				<f7-link v-show="action_data.type=='assign'" icon="far fa-paper-plane fa-pull-right color-blue" @click="" />
+                  </f7-list-item> 
         </f7-list>
     </f7-popover>
+    	
     <f7-popover class="popover-menu" id="pop-assign">
         <f7-list>
             assign task
@@ -149,8 +163,31 @@ export default {
                 selectedTotalSize: 0, // OB size
                 selectedIndex: [], // index of checkboxs
             },
+            	action_data: {},
             check_all_checked: false, // 全选按键
-            display_info: ['所有未分配的', '保种员认领但没分配的', '组长已分配但没认领的', '所有已分配的', '所有已认领的', '断种的官种', '报错的官种', '已有做种信息的', '有做种但未认领分配的', '已认领但无需下载的', '做种数少且仅分配1人的'],
+            filters_all: {
+            	display_info: { title: '',
+            		data: ['所有未分配的', '保种员认领但没分配的', '组长已分配但没认领的', '所有已分配的', '所有已认领的', '断种的官种', '报错的官种', '已有做种信息的', '有做种但未认领分配的', '已认领但无需下载的', '做种数少且仅分配1人的'],
+            		selected: 0,
+            },
+            		gffbz: { title: '发布组: ',
+            		data: ['< 不限 >', 'OurPad', 'PbK', 'OurBits', 'OurTV', 'HosT', 'iLoveHD', 'iLoveTV', 'DyFM', 'FFans', 'Pandora'].sort(), // 官方发布组
+            		selected: 0,
+            },
+            		seeding_status: { title: '做种状态: ',
+            		data: ['< 不限 >', '做种中(绿)', '正在下载或做种中', '下载完成的(橙)'],
+            		selected: 0,
+            },
+            	sr: { title: '保种员: ',
+            		data: ['< 不限 >', 'kevinqq'],
+            		selected: 0,
+            },
+            	per_page: { title: '每页显示: ',
+            		data: [5, 20, 30, 50, 100, 200],
+            		selected: 1,
+            	},
+            		},
+            filter_data: { data: [], selected: 0},
             display_sr_selected: 0,
             fields: [{
                     name: 'id',
@@ -446,6 +483,22 @@ export default {
                  	 this.$$('#data_table').removeClass('data-table-has-checked')
 
         },
+        action_open(ob_id, type, index, data) {
+        	// type: filter, undo/assign		index: filter index	data: undo/assign users
+        	this.action_data = {
+        		ob_id: ob_id,
+        	type: type,
+        		index: index,
+        		data: data,
+        }
+        console.log(JSON.stringify(this.action_data))
+        },
+        filter_open(filter) {
+        	this.filter_data = {
+        	data: this.filters_all[filter].data,
+		selected: this.filters_all[filter].selected,
+        }
+        },
         pop_menu() {
             console.log('popover menu clicked')
         },
@@ -458,10 +511,10 @@ export default {
             let tag = ''
             value.forEach((sr, index, array) => {
                 if (sr.ob_username) {
-                    tag = (sr.status == 3) ? `<span title="${sr.ob_username} 下载中..." class="text-color-blue"><i class="fas fa-spinner fa-spin"></i>${sr.ob_username.substr(0,3)}</span>` : (sr.status == 1) ? `<span title="${sr.ob_username} 已下载，未作种" class="text-color-orange"><i class="fas fa-download"></i>${sr.ob_username.substr(0,3)}</span>` : `<span title="${sr.ob_username} 做种中..." class="text-color-green"><i class="fas fa-upload"></i>${sr.ob_username.substr(0,3)}</span>`
+                    tag = (sr.status == 3) ? `<span title="${sr.ob_username} 下载中..." class="text-color-blue">${sr.ob_username.substr(0,3)} <i class="fas fa-spinner fa-spin"></i></span>` : (sr.status == 1) ? `<span title="${sr.ob_username} 已下载，未作种" class="text-color-orange">${sr.ob_username.substr(0,3)} <i class="fas fa-download"></i></span>` : `<span title="${sr.ob_username} 做种中..." class="text-color-green">${sr.ob_username.substr(0,3)} <i class="fas fa-upload"></i></span>`
                     // srs +=`${tag}${sr.ob_username} `
                     srs += tag + '<br>'
-                } else srs += `<span title="${sr} 无状态" class="text-color-gray"><i class="fas fa-check"></i>${sr.substr(0,3)}<span><br />`
+                } else srs += `<span title="${sr} 无状态" class="text-color-gray">${sr.substr(0,3)} <i class="fas fa-check"></i><span><br />`
             })
             return srs
         },
