@@ -14,14 +14,14 @@
                 </f7-input>
             </f7-list-item>
             <f7-list-item>
-                <f7-label>
-                    已选中: <f7-badge color="blue">{{ vuetable.selectedTo.length==0?'-':vuetable.selectedTo.length }}</f7-badge>
-                    总大小 <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1)+' GB' }}</f7-badge>
+                <f7-label>已选中: 
+    			<span v-show="vuetable.selectedIndex.length>0"><f7-badge color="blue">{{ vuetable.selectedTo.length }}</f7-badge> 种子
+                    <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1) }}</f7-badge>GB</span>
                 </f7-label>
                 <f7-input type="text" placeholder="已选择的种子ID列表" v-model="vuetable.selectedTo" disabled />
             </f7-list-item>
         </f7-list>
-        <div class="data-table data-table-init card">
+        <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
                     <span class="text-color-gray">选择种子认领/分配/报错，点击种子打开详情</span>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="data-table-actions">
                     <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange" title="汇报错误"></f7-link>
-                    <f7-link icon="fas fa-ellipsis-v fa-lg"></f7-link>
+                    <f7-link icon="far fa-times-circle fa-lg" @click="uncheck_all" title="取消选择"></f7-link>
                 </div>
             </div>
         </div>
@@ -58,11 +58,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="checkbox-cell" title="反选">
-                            <label class="checkbox">
+                        <th class="checkbox-cell" title="反选/全选">
+                            <!-- <label class="checkbox">
                                 <input type="checkbox"><i class="fas fa-adjust fa-lg" color=""></i>
-                            </label>
-                            <!-- <f7-checkbox /> -->
+    					<f7-checkbox @change="check_all_change" :checked="vuetable.selectedIndex.length==querydata.data.length" /> 
+                            </label>-->
+                            <f7-checkbox /> 
                         </th>
                         <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
                             {{item.title}}
@@ -428,16 +429,22 @@ export default {
                 this.vuetable.selectedTotalSize += size
                 // }
             }
+            // if (this.vuetable.selectedTo.length==this.querydata.data.length) this.check_all_checked = true
+        	//	else this.check_all_checked = false
             // console.log(JSON.stringify(this.vuetable))
         },
-        check_all_click() {
-            this.check_all_checked = !this.check_all_checked
-            // if (this.check_all_checked) {
-            //     this.vuetable.selectedIndex.length = 0
-            //     this.vuetable.selectedTo.length = 0
-            //     this.vuetable.selectedTotalSize = 0
-            //   }
-            //         this.vuetable.selectedIndex = [...Array(this. querydata.data.length)].map((v,k) => k)
+        uncheck_all() {
+        	console.log(JSON.stringify(this.vuetable.selectedIndex))
+        		let index = 0
+        	while (this.vuetable.selectedIndex.length>0) {
+        		index = this.vuetable.selectedIndex.pop()
+        		this.$$('#check_'+index).click()
+            }
+                 this.vuetable.selectedIndex.length = 0
+                 this.vuetable.selectedTo.length = 0
+                 this.vuetable.selectedTotalSize = 0
+                 	 this.$$('#data_table').removeClass('data-table-has-checked')
+
         },
         pop_menu() {
             console.log('popover menu clicked')
