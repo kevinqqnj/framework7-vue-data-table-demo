@@ -8,146 +8,161 @@
                 <f7-input type="text" placeholder="Your name" clear-button></f7-input>
             </f7-list-item>
             <f7-list-item>
-                <f7-label>过滤种子:</f7-label>
-                <f7-input type="select" v-model="filter_data.selected">
-                    <option v-for="(sr, index) in filter_data.data" :value="index">{{sr}}</option>
-                </f7-input>
-            </f7-list-item>
-            <f7-list-item>
-                <f7-label>已选中: 
-    			<span v-show="vuetable.selectedIndex.length>0"><f7-badge color="blue">{{ vuetable.selectedTo.length }}</f7-badge> 种子
+                <f7-label>已选中:
+                    <span v-show="vuetable.selectedIndex.length>0"><f7-badge color="blue">{{ vuetable.selectedTo.length }}</f7-badge> 种子
                     <f7-badge color="blue">{{ vuetable.selectedTotalSize.toFixed(1) }}</f7-badge>GB</span>
                 </f7-label>
                 <f7-input type="text" placeholder="已选择的种子ID列表" v-model="vuetable.selectedTo" disabled />
+    			<f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
             </f7-list-item>
-        	</f7-list>
+            <f7-list-item v-show="manual_input_ob">
+                <f7-label>手动输入种子ID: </f7-label>
+                <f7-input type="text" placeholder="以空格 / 逗号 / 回车隔开的种子ID列表" v-model="manual_ob_list" />
+            </f7-list-item>
+        </f7-list>
+        <f7-block v-show="manual_input_ob">
+            <f7-row>
+                <f7-col>
+                    <f7-button fill :disabled="manual_ob_list==''">撤 销</f7-button>
+                </f7-col>
+                <f7-col>
+                    <f7-button fill :disabled="manual_ob_list==''">认 领</f7-button>
+                </f7-col>
+                <f7-col>
+                    <f7-button fill :disabled="manual_ob_list==''" color="orange">分 配</f7-button>
+                </f7-col>
+            </f7-row>
+        </f7-block>
         <f7-block>
-    <f7-row class="data-table-actions">
-                        <f7-col v-for="(filter, key, index) in filters_all" :key="index">
-    <f7-link popover-open="#pop-filter" @click="filter_open(key)">
-	{{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
-    				</f7-col>
-    </f7-row>
-    </f7-block>
+            <f7-row class="data-table-actions">
+                <f7-col v-for="(filter, key, index) in filters_all" :key="index">
+                    <f7-link popover-open="#pop-filter" @click="filter_open(key)">
+                        {{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
+                </f7-col>
+            </f7-row>
+        </f7-block>
         <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
                     <span class="text-color-gray">选择种子认领/分配/报错，点击种子打开详情</span>
-                <div class="data-table-actions">
-                    <f7-link icon="fas fa-sync fa-fw" href="#"> 刷新</f7-link>
+                    <div class="data-table-actions">
+<f7-link @click="page_jump_open()">{{querydata.from}}-{{querydata.to}} of {{querydata.total}} 
+	<i class="fas fa-chevron-left fa-fw"></i>
+	 {{querydata.current_page }}/{{querydata.last_page}} 
+	 <i class="fas fa-chevron-right fa-fw"></i></f7-link>
+                        <f7-button fill href="#">刷 新 <i class="fas fa-sync fa-fw"></i></f7-button>
+                    </div>
+                </div>
+                <div class="data-table-header-selected">
+                    <div class="data-table-title-selected">
+                        <f7-row>
+                            <f7-col>
+                                <f7-button fill>撤 销</f7-button>
+                            </f7-col>
+                            <f7-col>
+                                <f7-button fill>认 领</f7-button>
+                            </f7-col>
+                            <f7-col>
+                                <f7-button fill color="orange">分 配</f7-button>
+                            </f7-col>
+                        </f7-row>
+                        </f7-segmented>
+                    </div>
+                    <div class="data-table-actions">
+                        <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange" title="汇报错误"></f7-link>
+                        <f7-link icon="far fa-times-circle fa-lg" @click="uncheck_all" title="取消选择"></f7-link>
+                    </div>
                 </div>
             </div>
-            <div class="data-table-header-selected">
-                <div class="data-table-title-selected">
-                    <f7-row>
-                        <f7-col>
-                            <f7-button fill>撤 销</f7-button>
-                        </f7-col>
-                        <f7-col>
-                            <f7-button fill>认 领</f7-button>
-                        </f7-col>
-                        <f7-col>
-                            <f7-button fill color="orange">分 配</f7-button>
-                        </f7-col>
-                    </f7-row>
-                    </f7-segmented>
-                </div>
-                <div class="data-table-actions">
-                    <f7-link icon="fas fa-exclamation-triangle fa-lg" color="orange" title="汇报错误"></f7-link>
-                    <f7-link icon="far fa-times-circle fa-lg" @click="uncheck_all" title="取消选择"></f7-link>
-                </div>
-            </div>
-        </div>
-        <div class="card-content">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="checkbox-cell" title="反选/全选">
-                            <!-- <label class="checkbox">
+            <f7-progressbar infinite v-show="vuetable.selectedIndex.length>0"></f7-progressbar>
+            
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell" title="反选/全选">
+                                <!-- <label class="checkbox">
                                 <input type="checkbox"><i class="fas fa-adjust fa-lg" color=""></i>
-    					<f7-checkbox @change="check_all_change" :checked="vuetable.selectedIndex.length==querydata.data.length" /> 
+              <f7-checkbox @change="check_all_change" :checked="vuetable.selectedIndex.length==querydata.data.length" />
                             </label>-->
-                            <f7-checkbox /> 
-                        </th>
-                        <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
-                            {{item.title}}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, index) in querydata.data" :key="item.id">
-                        <td class="checkbox-cell">
-                            <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
-                        </td>
-                        <td class="numeric-cell" :title="item.faults">
-                        	<i class="fas fa-exclamation-triangle" color="orange" v-if="item.is_faulty" />
-                            <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
-                        </td>
-                        <td class="numeric-cell">{{ item.size_f }}</td>
-                        <td class="numeric-cell">{{ item.seeds }}</td>
-                        <td class="numeric-cell">
-                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'undo', -1, item.securer_assigned)">
-                        	<span v-html="srsToIcon(item.securer_assigned)"></span></f7-link>
-                        </td>
-                        <td class="numeric-cell">
-                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.securer_accepted)">
-                        	<span v-html="srsToIcon(item.securer_accepted)"></span></f7-link>
-                            <!-- <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div> -->
-                        </td>
-                        <td class="numeric-cell">
-                        	<f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.self_downloaded)">
-                        	<span v-html="srsToIcon(item.self_downloaded)"></span></f7-link>
-                        </td>
-                        <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
-                        <td class="numeric-cell" v-html="strToInput(item.title)"></td>
-                        <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
-                        <td class="numeric-cell">{{ item.download_size }}</td>
-                        <td class="numeric-cell">{{ item.download_duration }}</td>
-                        <td class="numeric-cell">{{ item.seeding_duration }}</td>
-                        <td class="numeric-cell">{{ item.upload_size }}</td>
-                        <td class="numeric-cell">{{ item.finishes }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                                <f7-checkbox />
+                            </th>
+                            <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
+                                {{item.title}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in querydata.data" :key="item.id">
+                            <td class="checkbox-cell">
+                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
+                            </td>
+                            <td class="numeric-cell" :title="item.faults">
+                                <i class="fas fa-exclamation-triangle" color="orange" v-if="item.is_faulty" />
+                                <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
+                            </td>
+                            <td class="numeric-cell">{{ item.size_f }}</td>
+                            <td class="numeric-cell">{{ item.seeds }}</td>
+                            <td class="numeric-cell">
+                                <f7-link popover-open="#pop-action" @click="action_open(item.id, 'undo', -1, item.securer_assigned)">
+                                    <span v-html="srsToIcon(item.securer_assigned)"></span></f7-link>
+                            </td>
+                            <td class="numeric-cell">
+                                <f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.securer_accepted)">
+                                    <span v-html="srsToIcon(item.securer_accepted)"></span></f7-link>
+                                <!-- <div @click="quick_action(item.id, item.securer_accepted, 'active-assign')" v-html="srsToIcon(item.securer_accepted)"></div> -->
+                            </td>
+                            <td class="numeric-cell">
+                                <f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.self_downloaded)">
+                                    <span v-html="srsToIcon(item.self_downloaded)"></span></f7-link>
+                            </td>
+                            <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
+                            <td class="numeric-cell" v-html="strToInput(item.title)"></td>
+                            <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
+                            <td class="numeric-cell">{{ item.download_size }}</td>
+                            <td class="numeric-cell">{{ item.download_duration }}</td>
+                            <td class="numeric-cell">{{ item.seeding_duration }}</td>
+                            <td class="numeric-cell">{{ item.upload_size }}</td>
+                            <td class="numeric-cell">{{ item.finishes }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-     <f7-popover class="popover-menu" id="pop-filter">
-	<f7-list>
-		<f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked= "index==filter_data.selected" 
-							name="radio_group_filter" class="popover-close" />
-	    </f7-list>
-    </f7-popover>
-    						
-	<f7-popover class="popover-menu" id="pop-action">
-        <f7-list>
-          <f7-list-item :title="sr.ob_username ? sr.ob_username : sr" v-for="(sr, index) in action_data.data" :key="index" class="popover-close">
-				<f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" />
-				<f7-link v-show="action_data.type=='assign'" icon="far fa-paper-plane fa-pull-right color-blue" @click="" />
-                  </f7-list-item> 
-        </f7-list>
-    </f7-popover>
-    	
-    <f7-popover class="popover-menu" id="pop-assign">
-        <f7-list>
-            assign task
-            <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_se" :key="index">
+        <f7-popover class="popover-menu" id="pop-filter">
+            <f7-list>
+                <f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked="index==filter_data.selected" name="radio_group_filter" class="popover-close" />
+            </f7-list>
+        </f7-popover>
+        <f7-popover class="popover-menu" id="pop-action">
+            <f7-list>
+                <f7-list-item :title="sr.ob_username ? sr.ob_username : sr" v-for="(sr, index) in action_data.data" :key="index" class="popover-close">
+                    <f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" />
+                    <f7-link v-show="action_data.type=='assign'" icon="far fa-paper-plane fa-pull-right color-blue" @click="" />
+                </f7-list-item>
+            </f7-list>
+        </f7-popover>
+        <f7-popover class="popover-menu" id="pop-assign">
+            <f7-list>
+                assign task
+                <!-- <f7-list-item :title="sr" v-for="(sr, index) in action_data.ourbits_se" :key="index">
                       <f7-label >
                       <a href="#" @click="action_go(action_data.id, sr, 'activate', -1, index)">
                           <i class="fa fa-paper-plane-o fa-border color-orange pull-right"> 分配</i></a>
                       </f7-label>
                   </f7-list-item> -->
-        </f7-list>
-    </f7-popover>
-    <f7-popover class="popover-menu" id="pop-ob-id">
-        <f7-list>
-            <f7-list-item link="/form/" popover-close title="Forms"></f7-list-item>
-            <f7-list-item link="#" popover-close :title="'ID: '+seed_selected" @click.native="pop_menu"></f7-list-item>
-            <f7-list-item link="#" popover-close>
-                <f7-link href="http://www.baidu.com" external target="_blank">External</f7-link>
-            </f7-list-item>
-            <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
-        </f7-list>
-    </f7-popover>
+            </f7-list>
+        </f7-popover>
+        <f7-popover class="popover-menu" id="pop-ob-id">
+            <f7-list>
+                <f7-list-item link="/form/" popover-close title="Forms"></f7-list-item>
+                <f7-list-item link="#" popover-close :title="'ID: '+seed_selected" @click.native="pop_menu"></f7-list-item>
+                <f7-list-item link="#" popover-close>
+                    <f7-link href="http://www.baidu.com" external target="_blank">External</f7-link>
+                </f7-list-item>
+                <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
+            </f7-list>
+        </f7-popover>
     </div>
 </template>
 <script>
@@ -163,31 +178,38 @@ export default {
                 selectedTotalSize: 0, // OB size
                 selectedIndex: [], // index of checkboxs
             },
-            	action_data: {},
+            action_data: {},
             check_all_checked: false, // 全选按键
+            manual_input_ob: false,
+            manual_ob_list: '',
             filters_all: {
-            	display_info: { title: '',
-            		data: ['所有未分配的', '保种员认领但没分配的', '组长已分配但没认领的', '所有已分配的', '所有已认领的', '断种的官种', '报错的官种', '已有做种信息的', '有做种但未认领分配的', '已认领但无需下载的', '做种数少且仅分配1人的'],
-            		selected: 0,
+                display_info: {
+                    title: '',
+                    data: ['所有未分配的', '保种员认领但没分配的', '组长已分配但没认领的', '所有已分配的', '所有已认领的', '断种的官种', '报错的官种', '已有做种信息的', '有做种但未认领分配的', '已认领但无需下载的', '做种数少且仅分配1人的'],
+                    selected: 0,
+                },
+                gffbz: {
+                    title: '发布组: ',
+                    data: ['< 不限 >', 'OurPad', 'PbK', 'OurBits', 'OurTV', 'HosT', 'iLoveHD', 'iLoveTV', 'DyFM', 'FFans', 'Pandora'].sort(), // 官方发布组
+                    selected: 0,
+                },
+                seeding_status: {
+                    title: '做种状态: ',
+                    data: ['< 不限 >', '做种中(绿)', '正在下载或做种中', '下载完成的(橙)'],
+                    selected: 0,
+                },
+                sr: {
+                    title: '保种员: ',
+                    data: ['< 不限 >', 'kevinqq'],
+                    selected: 0,
+                },
+                per_page: {
+                    title: '每页显示: ',
+                    data: [5, 20, 30, 50, 100, 200],
+                    selected: 1,
+                },
             },
-            		gffbz: { title: '发布组: ',
-            		data: ['< 不限 >', 'OurPad', 'PbK', 'OurBits', 'OurTV', 'HosT', 'iLoveHD', 'iLoveTV', 'DyFM', 'FFans', 'Pandora'].sort(), // 官方发布组
-            		selected: 0,
-            },
-            		seeding_status: { title: '做种状态: ',
-            		data: ['< 不限 >', '做种中(绿)', '正在下载或做种中', '下载完成的(橙)'],
-            		selected: 0,
-            },
-            	sr: { title: '保种员: ',
-            		data: ['< 不限 >', 'kevinqq'],
-            		selected: 0,
-            },
-            	per_page: { title: '每页显示: ',
-            		data: [5, 20, 30, 50, 100, 200],
-            		selected: 1,
-            	},
-            		},
-            filter_data: { data: [], selected: 0},
+            filter_data: { data: [], selected: 0 },
             display_sr_selected: 0,
             fields: [{
                     name: 'id',
@@ -286,7 +308,7 @@ export default {
                 '__activeField': 'id',
             },
             querydata: {
-                "current_page": 1,
+                "current_page": 2,
                 "data": [{
                         "desc": " \u00a0\u5269\u4f59\u65f6\u95f4\uff1a8\u65f610\u5206\u5b98\u65b9\u56fd\u8bed\u4e2d\u5b57\u4f60\u8bf4\u7684\u90fd\u5bf9 \u7b2c\u4e00\u5b63 20171226-20180116 \u7b2c1-4\u671f 2017 | \u8521\u5eb7\u6c38 \u718a\u6893\u6dc7 \u6c88\u68a6\u8fb0 \u9773\u68a6\u4f73 \u8881\u7855 \u5218\u4e5f\u884c",
                         "download_duration": "",
@@ -429,7 +451,7 @@ export default {
                     }
                 ],
                 "from": 1,
-                "last_page": 45,
+                "last_page": 6,
                 "per_page": "5",
                 "to": 5,
                 "total": 221
@@ -451,7 +473,11 @@ export default {
                 console.log(response);
             });
     },
+    computed: {
+    },
     methods: {
+    	page_jump_open() {
+    	},
         check_click(index, id, size) {
             if (this.vuetable.selectedTo.indexOf(id) > -1) {
                 // de-select row
@@ -467,37 +493,37 @@ export default {
                 // }
             }
             // if (this.vuetable.selectedTo.length==this.querydata.data.length) this.check_all_checked = true
-        	//	else this.check_all_checked = false
+            //  else this.check_all_checked = false
             // console.log(JSON.stringify(this.vuetable))
         },
         uncheck_all() {
-        	console.log(JSON.stringify(this.vuetable.selectedIndex))
-        		let index = 0
-        	while (this.vuetable.selectedIndex.length>0) {
-        		index = this.vuetable.selectedIndex.pop()
-        		this.$$('#check_'+index).click()
+            console.log(JSON.stringify(this.vuetable.selectedIndex))
+            let index = 0
+            while (this.vuetable.selectedIndex.length > 0) {
+                index = this.vuetable.selectedIndex.pop()
+                this.$$('#check_' + index).click()
             }
-                 this.vuetable.selectedIndex.length = 0
-                 this.vuetable.selectedTo.length = 0
-                 this.vuetable.selectedTotalSize = 0
-                 	 this.$$('#data_table').removeClass('data-table-has-checked')
+            this.vuetable.selectedIndex.length = 0
+            this.vuetable.selectedTo.length = 0
+            this.vuetable.selectedTotalSize = 0
+            this.$$('#data_table').removeClass('data-table-has-checked')
 
         },
         action_open(ob_id, type, index, data) {
-        	// type: filter, undo/assign		index: filter index	data: undo/assign users
-        	this.action_data = {
-        		ob_id: ob_id,
-        	type: type,
-        		index: index,
-        		data: data,
-        }
-        console.log(JSON.stringify(this.action_data))
+            // type: filter, undo/assign    index: filter index data: undo/assign users
+            this.action_data = {
+                ob_id: ob_id,
+                type: type,
+                index: index,
+                data: data,
+            }
+            console.log(JSON.stringify(this.action_data))
         },
         filter_open(filter) {
-        	this.filter_data = {
-        	data: this.filters_all[filter].data,
-		selected: this.filters_all[filter].selected,
-        }
+            this.filter_data = {
+                data: this.filters_all[filter].data,
+                selected: this.filters_all[filter].selected,
+            }
         },
         pop_menu() {
             console.log('popover menu clicked')

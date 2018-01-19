@@ -33,3 +33,7 @@ Your custom styles go here
 	    text-transform: none;
 	    text-align: center;
 }
+.data-table-actions .link {
+	    text-transform: none;
+	    }
+	    
