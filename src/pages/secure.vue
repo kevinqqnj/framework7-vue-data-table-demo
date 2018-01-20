@@ -1,49 +1,53 @@
 <template>
     <div>
-        <f7-list inline-labels no-hairlines-md>
-            <!-- :inline-labels="$device.desktop"  -->
-            <f7-list-item>
-                <f7-label>保种员: 剩余空间
-                    <f7-badge color="green">1.0TB</f7-badge>
-                </f7-label>
-                <f7-button popover-open="#pop-paging" href="#">{{querydata.current_page}} / {{querydata.last_page}}</f7-button>
-                <!-- <f7-input type="text" placeholder="Your name" clear-button></f7-input> -->
+        <f7-list inline-labels no-hairlines-md> <!-- :inline-labels="$device.desktop"> -->
+            <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}">
+                <f7-icon icon="fas fa-user" slot="media"></f7-icon>
+                <f7-label> 选择保种员:</f7-label>
+                <select name="display_sr" v-model="filters_all.gffbz.selected">
+                    <option :value="index" v-for="(sr, index) of filters_all.gffbz.data" :selected="index==filters_all.gffbz.selected">{{sr}}</option>
+                </select>
             </f7-list-item>
             <f7-list-item>
-                <f7-label>保种记录(最大3TB):</f7-label>
+                <f7-icon icon="fas fa-chart-pie" slot="media"></f7-icon>
+                <f7-label>保种空间:</f7-label>
                 <f7-label>分配200
-                    <f7-badge color="green">1.0TB</f7-badge>
+                    <f7-badge color="green">1.0 / 3TB</f7-badge>
                     <f7-progressbar color="green" :progress="20" class="my-progressbar"></f7-progressbar>
                 </f7-label>
                 <f7-label>认领200
-                    <f7-badge color="green">1.0TB</f7-badge>
+                    <f7-badge color="red">3.0 / 3TB</f7-badge>
                     <f7-progressbar color="red" :progress="80"></f7-progressbar>
                 </f7-label>
-                <f7-toggle @change="manual_input_ob = !manual_input_ob" title="手动输入种子ID"></f7-toggle>
             </f7-list-item>
-            <f7-list-item v-show="manual_input_ob">
-                <f7-label>请输入种子ID: </f7-label>
-                <f7-input type="text" placeholder="以空格 / 逗号 / 回车隔开的种子ID列表" v-model="manual_ob_list" />
+            <f7-list-item>
+                <f7-icon icon="fas fa-pencil-alt" slot="media"></f7-icon>
+                <f7-label>手动输入种子ID:</f7-label>
+                <f7-toggle @change="is_manual_input = !is_manual_input" title="手动输入种子ID"></f7-toggle>
+            </f7-list-item>
+            <f7-list-item v-show="is_manual_input">
+                <f7-icon icon="fas fa-terminal" slot="media"></f7-icon>
+                <f7-input type="text" placeholder="请输入以空格 / 逗号 / 回车隔开的种子ID列表" clear-button
+                  id="manual_ob_list" @change="set_manual_ob_list" />
             </f7-list-item>
         </f7-list>
         <f7-block>
             <f7-row>
-                <f7-col>
-                    <f7-button fill>撤 销
-                        <i class="fas fa-undo" /></f7-button>
-                </f7-col>
-                <f7-col>
-                    <f7-button fill>认 领
-                        <i class="fas fa-check-square" /></f7-button>
-                </f7-col>
-                <f7-col>
-                    <f7-button fill color="orange">分 配
-                        <i class="fas fa-paper-plane" /></f7-button>
-                </f7-col>
-                <f7-col>
-                    <f7-button fill>刷 新
-                        <i class="fas fa-sync" /></f7-button>
-                </f7-col>
+                <f7-col width="33" tablet-width="20">
+                    <f7-button class="btn-mb" fill raised icon="fas fa-undo" text=" 撤 销" color="orange" />
+                  </f7-col>
+                                  <f7-col width="33" tablet-width="20">
+                    <f7-button fill raised icon="fas fa-paper-plane" text=" 分 配" color="orange" />
+                  </f7-col>
+                  <f7-col width="33" tablet-width="20">
+                    <f7-button fill raised icon="fas fa-list-ul" text=" 下载列表" />
+                  </f7-col>
+                <f7-col width="33" tablet-width="20">
+                    <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-check-square" text=" 认 领" />
+                  </f7-col>
+                <f7-col width="33" tablet-width="20">
+                    <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-sync" text=" 刷 新" />
+                  </f7-col>
             </f7-row>
         </f7-block>
         <!-- Filters for query 过滤器 -->
@@ -61,6 +65,10 @@
                     <!-- pagination 页面信息 -->
                     <span class="text-color-gray">{{querydata.from}}-{{querydata.to}} of {{querydata.total}}</span>
                     <div class="data-table-actions">
+                        <f7-link popover-open="#pop-filter" @click="filter_open('per_page')">
+                            {{per_page.title}} {{per_page.data[per_page.selected]}} <i class="fas fa-caret-down"></i>
+                        </f7-link>
+                    <!-- pagination 页面跳转 -->
                         <f7-button @click="query_data_from_api(querydata.current_page-1)" :class="querydata.current_page==1? 'text-color-gray':''" icon="fas fa-chevron-left" />
                         <f7-button popover-open="#pop-paging" href="#">{{querydata.current_page}} / {{querydata.last_page}}</f7-button>
                         <f7-button @click="query_data_from_api(querydata.current_page+1)" :class="querydata.current_page==querydata.last_page? 'text-color-gray':''" icon="fas fa-chevron-right" />
@@ -114,9 +122,9 @@
                                 <f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.self_downloaded)">
                                     <span v-html="srsToIcon(item.self_downloaded)"></span></f7-link>
                             </td>
+                            <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
                             <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
                             <td class="numeric-cell" v-html="strToInput(item.title)"></td>
-                            <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
                             <td class="numeric-cell">{{ item.download_size }}</td>
                             <td class="numeric-cell">{{ item.download_duration }}</td>
                             <td class="numeric-cell">{{ item.seeding_duration }}</td>
@@ -142,7 +150,7 @@
         </f7-popover>
         <f7-popover class="popover-menu popover-max-height" id="pop-paging">
             <f7-list>
-                <f7-list-item link="#" :title="sr" v-for="(sr, index) in querydata.last_page" :key="index" class="popover-close" @click="query_data_from_api(sr)" :class="querydata.current_page==sr ? 'bg-color-blue' : ''">
+                <f7-list-item link="#" :title="sr" v-for="(sr, index) in querydata.last_page" :key="index" class="popover-close" @click="query_data_from_api(sr)" :class="querydata.current_page==sr ? 'color-blue' : ''">
                 </f7-list-item>
             </f7-list>
         </f7-popover>
@@ -156,7 +164,7 @@
                 <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
             </f7-list>
         </f7-popover>
-        <f7-block-title>选择种子来认领/分配/报错 点击种子打开详情 点击表头排序</f7-block-title>
+        <f7-block-title id="_footer">选择种子来认领/分配/报错 点击种子打开详情 点击表头排序</f7-block-title>
     </div>
 </template>
 <script>
@@ -174,7 +182,7 @@ export default {
             },
             action_data: {},
             check_all_checked: false, // 全选按键
-            manual_input_ob: false,
+            is_manual_input: false,
             manual_ob_list: '',
             filters_all: {
                 display_info: {
@@ -197,14 +205,13 @@ export default {
                     data: ['< 不限 >', 'kevinqq'],
                     selected: 0,
                 },
-                per_page: {
-                    title: '每页显示: ',
-                    data: [5, 20, 30, 50, 100, 200],
-                    selected: 1,
-                },
             },
             filter_data: { data: [], selected: 0, current_filter: '' },
-            display_sr_selected: 0,
+            per_page: {
+                title: '每页显示: ',
+                data: [5, 20, 50, 100, 200],
+                selected: 1,
+            },
             fields: [{
                     name: 'id',
                     title: '种子ID',
@@ -243,6 +250,13 @@ export default {
                     titleClass: 'self_downloaded',
                 },
                 {
+                    name: 'seed_since',
+                    title: '发布时间',
+                    titleClass: 'label-cell',
+                    // callback: toSmartDate,
+                    sortField: 'Ob.seed_since',
+                },
+                {
                     name: 'desc',
                     title: 'Description',
                     titleClass: 'label-cell',
@@ -255,13 +269,6 @@ export default {
                     titleClass: 'label-cell',
                     // callback: this.strToInput,
                     sortField: 'Ob.title',
-                },
-                {
-                    name: 'seed_since',
-                    title: '发布时间',
-                    titleClass: 'label-cell',
-                    // callback: toSmartDate,
-                    sortField: 'Ob.seed_since',
                 },
                 {
                     name: 'download_size',
@@ -472,9 +479,10 @@ export default {
     },
     methods: {
         query_data_from_api(page) {
+            console.log(this.manual_ob_list)
             if (this.querydata.current_page == 1 && page < 1) return this.querydata.current_page = 1
             if (this.querydata.current_page == this.querydata.last_page && page > this.querydata.last_page) return this.querydata.current_page = this.querydata.last_page
-            this.$f7.progressbar.show('yellow');
+            this.$f7.progressbar.show('multi'); // 'yellow' 'multi'
             this.querydata.current_page = page
             this.$axios.get('/api/query_assign_task/' + page)
                 .then((response) => {
@@ -488,6 +496,9 @@ export default {
                     }, 1000)
 
                 });
+        },
+        display_sr_selected() {
+            this.filters_all.gffbz.selected = document.getElementById('display_sr').value
         },
         check_click(index, id, size) {
             if (this.vuetable.selectedTo.indexOf(id) > -1) {
@@ -531,6 +542,13 @@ export default {
             console.log(JSON.stringify(this.action_data))
         },
         filter_open(filter) {
+            if (filter == 'per_page') {
+                return this.filter_data = {
+                    data: this.per_page.data,
+                    selected: this.per_page.selected,
+                    current_filter: filter,
+                }
+            }
             this.filter_data = {
                 data: this.filters_all[filter].data,
                 selected: this.filters_all[filter].selected,
@@ -538,6 +556,9 @@ export default {
             }
         },
         filter_select(filter, index) {
+            if (filter == 'per_page') {
+                return this.per_page.selected = index
+            }
             this.filters_all[filter].selected = index
         },
         pop_menu() {
@@ -583,10 +604,6 @@ export default {
             })
             this.$f7.dialog.create({
                 title: dialog_title,
-                // closeByBackdropClick not working in 2.0.6, temp fix:
-                // node_modules/framework7/dist/framework7.esm.bundle.js
-                // var Dialog = {
-                // closeByBackdropClick: true,
                 buttons: button_list,
                 verticalButtons: true,
             }).open();
@@ -608,6 +625,13 @@ export default {
             }
             this.sortOrders.__activeField = sort_key
             console.log(JSON.stringify(this.sortOrders))
+        },
+        set_manual_ob_list() {
+          return this.manual_ob_list = document.getElementById('manual_ob_list').value
+            setTimeout(() => {
+                document.getElementById('_footer').click()
+                console.log('111')
+            }, 1000)
         },
     }
 };

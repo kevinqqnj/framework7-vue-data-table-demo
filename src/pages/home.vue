@@ -4,22 +4,6 @@
         <f7-block inner>
             Info from OB website.
         </f7-block>
-         <a class="item-link smart-select smart-select-init" data-open-in="popover">
-    <select name="superhero" multiple>
-      <option value="Batman" selected>Batman</option>
-      <option value="Superman">Superman</option>
-      <option value="Hulk">Hulk</option>
-      <option value="Spiderman">Spiderman</option>
-      <option value="Ironman">Ironman</option>
-      <option value="Thor">Thor</option>
-      <option value="Wonder Woman">Wonder Woman</option>
-    </select>
-    <div class="item-content">
-      <div class="item-inner">
-        <div class="item-title">Super Hero</div>
-      </div>
-    </div>
-  </a>
         <f7-block-title>用 户</f7-block-title>
         <f7-list class="components-list searchbar-found">
             <f7-list-item title="ID / Ourbits用户名：">
