@@ -4,9 +4,9 @@
             <f7-nav-left>
                 <f7-link class="panel-open" open-panel="left" icon="fas fa-bars"></f7-link>
             </f7-nav-left>
-            <div class="title">Ourbits管理 [{{ login_name }}]</div>
+            <div class="title">Ourbits管理</div>
             <f7-nav-right>
-                <f7-link title="登录 | 注册" icon="fas fa-sign-in-alt"></f7-link>
+                <f7-link href="/login/" title="登录 | 注册" icon="fas fa-user-times"></f7-link>
             </f7-nav-right>
         </f7-navbar>
         <f7-toolbar tabbar style="background: rgba(33, 168, 243, 1);" :class="$device.desktop?'':'toolbar-bottom-md'">
@@ -56,9 +56,13 @@ export default {
     }
   },
   methods: {
-    method1() {
-    },
-  }
+    login() {
+      let prompt=`输入管理系统的用户名、密码<br>没有账号？<f7-link href="#">注 册</f7-link>`
+      this.$f7.dialog.login(prompt, '登录', (username, password)=> {
+          this.$f7.dialog.alert('Thank you!<br>Username:' + username + '<br>Password:' + password)
+    },)
+  },
+}
 
 }
 </script>

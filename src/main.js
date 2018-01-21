@@ -9,7 +9,7 @@ import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js';
 import AppStyles from './assets/css/app.css'
 // Import App Component
 import app from './app.vue'
-	
+
 // Import Routes
 import routes from './routes.js'
 // Import VUEX store. Vuex already imported in store.js
@@ -36,8 +36,13 @@ export default new Vue({
   render: c => c('app'),
   components: { app },
   framework7: {
+    root: '#app',
     id: 'io.framework7.testapp',
-    theme, // md or ios
+    theme: theme, // md or ios
+// view: {
+// pushState: true  // pushState only for browser. / will not work, homepage link is http://localhost:8080/#!/index/
+// },
+      routes: routes,
   },
-  routes,
+
 });

@@ -4,8 +4,8 @@
             <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}">
                 <f7-icon icon="fas fa-user" slot="media"></f7-icon>
                 <f7-label> 选择保种员:</f7-label>
-                <select name="display_sr" v-model="filters_all.gffbz.selected">
-                    <option :value="index" v-for="(sr, index) of filters_all.gffbz.data" :selected="index==filters_all.gffbz.selected">{{sr}}</option>
+                <select name="display_sr" v-model="filters_all.display_info.selected">
+                    <option :value="index" v-for="(sr, index) of filters_all.display_info.data" :selected="index==filters_all.display_info.selected">{{sr}}</option>
                 </select>
             </f7-list-item>
             <f7-list-item>
@@ -93,7 +93,9 @@
                             <th class="checkbox-cell" title="反选/全选">
                                 <f7-checkbox />
                             </th>
-                            <th class="label-cell" v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''" @click="set_sortkey(item.name)">
+                            <th class="label-cell" v-for="item in fields" :key="item.name"
+                            :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''"
+                            @click="set_sortkey(item.name)">
                                 {{item.title}}
                             </th>
                         </tr>
@@ -101,11 +103,12 @@
                     <tbody>
                         <tr v-for="(item, index) in querydata.data" :key="item.id">
                             <td class="checkbox-cell">
-                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
+                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index"
+                                :checked="vuetable.selectedIndex.indexOf(index)>-1" />
                             </td>
                             <td class="numeric-cell" :title="item.faults">
-                                <i class="fas fa-exclamation-triangle" color="orange" v-if="item.is_faulty" />
-                                <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank">{{ item.id }}</f7-link>
+                                <i class="fas fa-exclamation-triangle" color="orange" v-show="item.is_faulty" />
+                                <f7-link :href="'https://ourbits.club/details.php?id='+item.id+'&hit=1'" external target="_blank" :text="(item.id).toString()" />
                             </td>
                             <td class="numeric-cell">{{ item.size_f }}</td>
                             <td class="numeric-cell">{{ item.seeds }}</td>
@@ -452,7 +455,7 @@ export default {
                     }
                 ],
                 "from": 1,
-                "last_page": 6,
+                "last_page": 66,
                 "per_page": "5",
                 "to": 5,
                 "total": 221

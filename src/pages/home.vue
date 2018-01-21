@@ -102,6 +102,7 @@ export default {
   data() {
     return {
       user_info: {},
+      sec_storage: 2,
     }
   },
   filters: {
