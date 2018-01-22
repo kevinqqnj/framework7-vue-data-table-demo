@@ -3,10 +3,10 @@
     <f7-navbar title="登录 | 注册" back-link="Back" sliding></f7-navbar>
     <f7-block>
       <f7-row>
-        <f7-col v-show="$device.desktop" tablet-width="25" />
+        <f7-col width="0" tablet-width="25" />
         <f7-col width="100" tablet-width="50">
 
-    <f7-list inline-labels> <!-- :inline-labels="$device.desktop"> -->
+    <f7-list inline-labels no-hairlines-md> <!-- :inline-labels="$device.desktop"> -->
             <f7-list-item>
                 <f7-icon icon="fas fa-user" slot="media"></f7-icon>
                 <f7-input type="text" placeholder="用户名，英文/数字/下划线" clear-button
@@ -53,7 +53,7 @@
    <f7-block>
             <f7-row>
                   <f7-col v-if="!is_register">
-                    <f7-button fill raised text="登 录" />
+                    <f7-button @click="login(e)" fill raised text="登 录" class="" />
                   </f7-col>
                  <f7-col v-if="is_register">
                     <f7-button fill raised text="注 册" color="green" />
@@ -63,7 +63,7 @@
         <f7-block-title></f7-block-title>
 
     </f7-col>
-    <f7-col v-show="$device.desktop" tablet-width="25"/>
+    <f7-col width="0" tablet-width="25"/>
   </f7-row>
     </f7-block>
 

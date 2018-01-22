@@ -1,64 +1,71 @@
 <template>
     <div>
-        <f7-list inline-labels no-hairlines-md> <!-- :inline-labels="$device.desktop"> -->
-            <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}">
-                <f7-icon icon="fas fa-user" slot="media"></f7-icon>
-                <f7-label> 选择保种员:</f7-label>
-                <select name="display_sr" v-model="filters_all.display_info.selected">
-                    <option :value="index" v-for="(sr, index) of filters_all.display_info.data" :selected="index==filters_all.display_info.selected">{{sr}}</option>
-                </select>
-            </f7-list-item>
-            <f7-list-item>
-                <f7-icon icon="fas fa-chart-pie" slot="media"></f7-icon>
-                <f7-label>保种空间:</f7-label>
-                <f7-label>分配200
-                    <f7-badge color="green">1.0 / 3TB</f7-badge>
-                    <f7-progressbar color="green" :progress="20" class="my-progressbar"></f7-progressbar>
-                </f7-label>
-                <f7-label>认领200
-                    <f7-badge color="red">3.0 / 3TB</f7-badge>
-                    <f7-progressbar color="red" :progress="80"></f7-progressbar>
-                </f7-label>
-            </f7-list-item>
-            <f7-list-item>
-                <f7-icon icon="fas fa-pencil-alt" slot="media"></f7-icon>
-                <f7-label>手动输入种子ID:</f7-label>
-                <f7-toggle @change="is_manual_input = !is_manual_input" title="手动输入种子ID"></f7-toggle>
-            </f7-list-item>
-            <f7-list-item v-show="is_manual_input">
-                <f7-icon icon="fas fa-terminal" slot="media"></f7-icon>
-                <f7-input type="text" placeholder="请输入以空格 / 逗号 / 回车隔开的种子ID列表" clear-button
-                  id="manual_ob_list" @change="set_manual_ob_list" />
-            </f7-list-item>
-        </f7-list>
-        <f7-block>
-            <f7-row>
-                <f7-col width="33" tablet-width="20">
-                    <f7-button class="btn-mb" fill raised icon="fas fa-undo" text=" 撤 销" color="orange" />
-                  </f7-col>
-                                  <f7-col width="33" tablet-width="20">
-                    <f7-button fill raised icon="fas fa-paper-plane" text=" 分 配" color="orange" />
-                  </f7-col>
-                  <f7-col width="33" tablet-width="20">
-                    <f7-button fill raised icon="fas fa-list-ul" text=" 下载列表" />
-                  </f7-col>
-                <f7-col width="33" tablet-width="20">
-                    <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-check-square" text=" 认 领" />
-                  </f7-col>
-                <f7-col width="33" tablet-width="20">
-                    <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-sync" text=" 刷 新" />
-                  </f7-col>
-            </f7-row>
-        </f7-block>
+        <f7-row>
+            <f7-col width="100" tablet-width="50">
+                <f7-list inline-labels no-hairlines-md>
+                    <!-- :inline-labels="$device.desktop"> -->
+                    <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}">
+                        <f7-icon icon="fas fa-user" slot="media"></f7-icon>
+                        <f7-label> 选择保种员:</f7-label>
+                        <select name="display_sr" v-model="filters_all.display_info.selected">
+                            <option :value="index" v-for="(sr, index) of filters_all.display_info.data" :selected="index==filters_all.display_info.selected">{{sr}}</option>
+                        </select>
+                    </f7-list-item>
+                    <f7-list-item>
+                        <f7-icon icon="fas fa-chart-pie" slot="media"></f7-icon>
+                        <f7-label>保种空间:</f7-label>
+                        <f7-label>分配200
+                            <f7-badge color="green">1.0 / 3TB</f7-badge>
+                            <f7-progressbar color="green" :progress="20" class="my-progressbar"></f7-progressbar>
+                        </f7-label>
+                        <f7-label>认领200
+                            <f7-badge color="red">3.0 / 3TB</f7-badge>
+                            <f7-progressbar color="red" :progress="80"></f7-progressbar>
+                        </f7-label>
+                    </f7-list-item>
+                    <f7-list-item>
+                        <f7-icon icon="fas fa-pencil-alt" slot="media"></f7-icon>
+                        <f7-label>手动输入种子ID:</f7-label>
+                        <f7-toggle @change="is_manual_input = !is_manual_input" title="手动输入种子ID"></f7-toggle>
+                    </f7-list-item>
+                    <f7-list-item v-show="is_manual_input">
+                        <f7-icon icon="fas fa-terminal" slot="media"></f7-icon>
+                        <f7-input type="text" placeholder="请输入以空格 / 逗号 / 回车隔开的种子ID列表" clear-button id="manual_ob_list" @change="set_manual_ob_list" />
+                    </f7-list-item>
+                </f7-list>
+            </f7-col>
+            <f7-col width="100" tablet-width="50">
+                <f7-block>
+                    <f7-row>
+                        <f7-col width="33">
+                            <f7-button class="btn-mb" fill raised icon="fas fa-undo" text=" 撤 销" color="orange" />
+                        </f7-col>
+                        <f7-col width="33">
+                            <f7-button fill raised icon="fas fa-paper-plane" text=" 分 配" color="orange" />
+                        </f7-col>
+                        <f7-col width="33">
+                            <f7-button fill raised icon="fas fa-list-ul" text=" 下载列表" />
+                        </f7-col>
+                        <f7-col width="33">
+                            <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-check-square" text=" 认 领" />
+                        </f7-col>
+                        <f7-col width="33">
+                            <f7-button @click="query_data_from_api(111)" fill raised icon="fas fa-sync" text=" 刷 新" />
+                        </f7-col>
+                    </f7-row>
+                </f7-block>
+
         <!-- Filters for query 过滤器 -->
-        <f7-block>
+        <!-- <f7-block> -->
             <f7-row class="data-table-actions">
                 <f7-col width="50" tablet-width="20" v-for="(filter, key, index) in filters_all" :key="index">
                     <f7-link popover-open="#pop-filter" @click="filter_open(key)">
                         {{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
                 </f7-col>
             </f7-row>
-        </f7-block>
+        <!-- </f7-block> -->
+    </f7-col>
+</f7-row>
         <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
@@ -68,7 +75,7 @@
                         <f7-link popover-open="#pop-filter" @click="filter_open('per_page')">
                             {{per_page.title}} {{per_page.data[per_page.selected]}} <i class="fas fa-caret-down"></i>
                         </f7-link>
-                    <!-- pagination 页面跳转 -->
+                        <!-- pagination 页面跳转 -->
                         <f7-button @click="query_data_from_api(querydata.current_page-1)" :class="querydata.current_page==1? 'text-color-gray':''" icon="fas fa-chevron-left" />
                         <f7-button popover-open="#pop-paging" href="#">{{querydata.current_page}} / {{querydata.last_page}}</f7-button>
                         <f7-button @click="query_data_from_api(querydata.current_page+1)" :class="querydata.current_page==querydata.last_page? 'text-color-gray':''" icon="fas fa-chevron-right" />
@@ -93,18 +100,15 @@
                             <th class="checkbox-cell" title="反选/全选">
                                 <f7-checkbox />
                             </th>
-                            <th class="label-cell" v-for="item in fields" :key="item.name"
-                            :class="(item.name=='id') ? 'sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell' : ''"
-                            @click="set_sortkey(item.name)">
-                                {{item.title}}
+                            <th v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'label-cell sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell '+item.titleClass : item.titleClass"
+                                @click="set_sortkey(item.name)">{{item.title}}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in querydata.data" :key="item.id">
                             <td class="checkbox-cell">
-                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index"
-                                :checked="vuetable.selectedIndex.indexOf(index)>-1" />
+                                <f7-checkbox @change="check_click(index, item.id, item.size_f)" :id="'check_'+index" :checked="vuetable.selectedIndex.indexOf(index)>-1" />
                             </td>
                             <td class="numeric-cell" :title="item.faults">
                                 <i class="fas fa-exclamation-triangle" color="orange" v-show="item.is_faulty" />
@@ -128,19 +132,26 @@
                             <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
                             <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
                             <td class="numeric-cell" v-html="strToInput(item.title)"></td>
-                            <td class="numeric-cell">{{ item.download_size }}</td>
-                            <td class="numeric-cell">{{ item.download_duration }}</td>
-                            <td class="numeric-cell">{{ item.seeding_duration }}</td>
-                            <td class="numeric-cell">{{ item.upload_size }}</td>
-                            <td class="numeric-cell">{{ item.finishes }}</td>
+                            <td class="numeric-cell tablet-only">{{ item.download_size }}</td>
+                            <td class="numeric-cell tablet-only">{{ item.download_duration }}</td>
+                            <td class="numeric-cell tablet-only">{{ item.seeding_duration }}</td>
+                            <td class="numeric-cell tablet-only">{{ item.upload_size }}</td>
+                            <td class="numeric-cell tablet-only">{{ item.finishes }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <f7-popover class="popover-menu popover-max-height" id="pop-filter">
+       <!--  <f7-popover class="popover-menu popover-max-height" id="pop-filter111">
             <f7-list>
                 <f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked="index==filter_data.selected" name="radio_group_filter" class="popover-close" @change="filter_select(filter_data.current_filter, index)" />
+            </f7-list>
+        </f7-popover> -->
+        <f7-popover class="popover-menu popover-max-height" id="pop-filter">
+            <f7-list>
+                <f7-list-item link="#" :title="sr=='-'?'<不限>':sr" v-for="(sr, index) in filter_data.data" :key="index" class="popover-close" :checked="index==filter_data.selected"
+                @click="filter_select(filter_data.current_filter, index)" :class="filter_data.selected==index ? 'color-blue' : ''">
+                </f7-list-item>
             </f7-list>
         </f7-popover>
         <f7-popover class="popover-menu popover-max-height" id="pop-action">
@@ -195,17 +206,17 @@ export default {
                 },
                 gffbz: {
                     title: '发布组: ',
-                    data: ['< 不限 >', 'OurPad', 'PbK', 'OurBits', 'OurTV', 'HosT', 'iLoveHD', 'iLoveTV', 'DyFM', 'FFans', 'Pandora'].sort(), // 官方发布组
+                    data: ['-', 'OurPad', 'PbK', 'OurBits', 'OurTV', 'HosT', 'iLoveHD', 'iLoveTV', 'DyFM', 'FFans', 'Pandora'].sort(), // 官方发布组
                     selected: 0,
                 },
                 seeding_status: {
                     title: '做种状态: ',
-                    data: ['< 不限 >', '做种中(绿)', '正在下载或做种中', '下载完成的(橙)'],
+                    data: ['-', '做种中(绿)', '正在下载或做种中', '下载完成的(橙)'],
                     selected: 0,
                 },
                 sr: {
                     title: '保种员: ',
-                    data: ['< 不限 >', 'kevinqq'],
+                    data: ['-', 'kevinqq'],
                     selected: 0,
                 },
             },
@@ -276,33 +287,33 @@ export default {
                 {
                     name: 'download_size',
                     title: '下载(GB)',
-                    titleClass: 'label-cell tablet-only',
+                    titleClass: 'numeric-cell tablet-only',
                     dataClass: 'numeric-cell',
                     sortField: 'ourbits_users.download_size',
                 },
                 {
                     name: 'download_duration',
                     title: '下载时长',
-                    titleClass: 'label-cell tablet-only',
+                    titleClass: 'numeric-cell tablet-only',
                     sortField: 'ourbits_users.download_duration',
                 },
                 {
                     name: 'seeding_duration',
                     title: '做种时长',
-                    titleClass: 'label-cell tablet-only',
+                    titleClass: 'numeric-cell tablet-only',
                     sortField: 'ourbits_users.seeding_duration',
                 },
                 {
                     name: 'upload_size',
                     title: '上传(GB)',
-                    titleClass: 'label-cell tablet-only',
+                    titleClass: 'numeric-cell tablet-only',
                     dataClass: 'numeric-cell',
                     sortField: 'ourbits_users.download_size',
                 },
                 {
                     name: 'finishes',
                     title: '完成次数',
-                    titleClass: 'label-cell tablet-only',
+                    titleClass: 'numeric-cell tablet-only',
                     dataClass: 'numeric-cell',
                     sortField: 'Ob.finishes',
                 },
@@ -630,7 +641,7 @@ export default {
             console.log(JSON.stringify(this.sortOrders))
         },
         set_manual_ob_list() {
-          return this.manual_ob_list = document.getElementById('manual_ob_list').value
+            return this.manual_ob_list = document.getElementById('manual_ob_list').value
             setTimeout(() => {
                 document.getElementById('_footer').click()
                 console.log('111')

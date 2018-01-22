@@ -31,11 +31,15 @@ Your custom styles go here
     -webkit-transform: translate3d(0,-64px,0);
     transform: translate3d(0,-64px,0);
     }
-/*表格紧凑    */
+/*表格紧凑*/
 .md .data-table td, .md .data-table th {
     padding-left: 3px;
     padding-right: 3px;
   }
+.md .data-table td.label-cell, .md .data-table th.label-cell {
+    padding-left: 5px;
+    padding-right: 5px;
+}
 .md .dialog-buttons-vertical .dialog-buttons .dialog-button {
 	    text-transform: none;
 	    text-align: center;
@@ -46,10 +50,14 @@ Your custom styles go here
 	    }
 /*popover如果菜单过长，则显示滚动条      */
 .popover-max-height .popover-inner {
-      max-height: 95vh;
+      max-height: 90vh;
 }
+.smart-select-popover .popover-inner {
+    max-height: 90vh;
+}
+/*margin for multiple button rows*/
 .btn-mb {
-  margin-bottom: 3px;
+  margin-bottom: 8px;
 }
 
 

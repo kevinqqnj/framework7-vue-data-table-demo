@@ -6,10 +6,17 @@
             </f7-nav-left>
             <div class="title">Ourbits管理</div>
             <f7-nav-right>
+              <f7-row v-if="$device.desktop || $device.ipad">
+                <f7-link href="/about/" text="管理"></f7-link>
+                <f7-link href="/about/" text="同步"></f7-link>
+               <f7-link href="/about/" text="设置"></f7-link>
+               <f7-link href="/about/" text="About"></f7-link>
+             </f7-row>
                 <f7-link href="/login/" title="登录 | 注册" icon="fas fa-user-times"></f7-link>
             </f7-nav-right>
         </f7-navbar>
-        <f7-toolbar tabbar style="background: rgba(33, 168, 243, 1);" :class="$device.desktop?'':'toolbar-bottom-md'">
+        <f7-toolbar tabbar style="background: rgba(33, 168, 243, 1);"
+          :class="($device.desktop||$device.ipad)?'':'toolbar-bottom-md'">
             <a href="./" class="tab-link" data-route-tab-id="tab1">
               <i class="icon fas fa-home fa-lg"></i>Home
               <!-- <span class="tabbar-label">Home</span> -->

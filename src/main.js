@@ -40,7 +40,7 @@ export default new Vue({
     id: 'io.framework7.testapp',
     theme: theme, // md or ios
 // view: {
-// pushState: true  // pushState only for browser. / will not work, homepage link is http://localhost:8080/#!/index/
+// pushState: true  // pushState only for browser. in my routes.js "/" will not work, homepage link is http://localhost:8080/#!/index/
 // },
       routes: routes,
   },
