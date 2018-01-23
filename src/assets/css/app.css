@@ -62,29 +62,3 @@ Your custom styles go here
 
 
 
-
-
-
-
-
-
-
-
-/*
-# dialog 点击外面不会自动关闭：closeByBackdropClick not working in 2.0.6, temp fix:
-  /node_modules/framework7/dist/framework7.esm.bundle.js
-  var Dialog = {
-  closeByBackdropClick: true,
-
-# popover default set class="popover-close" - 点击后自动关闭
-# /node_modules/framework7/dist/framework7.esm.bundle.js
-  renderItem(item, index) {
-    const ss = this;
-    if (ss.params.renderItem) return ss.params.renderItem.call(ss, item, index);
-    let itemHtml;
-    if (item.isLabel) {
-      itemHtml = `<li class="item-divider">${item.groupLabel}</li>`;
-    } else {
-      itemHtml = `
-        <li class="popover-close ${item.className || ''}">
-*/

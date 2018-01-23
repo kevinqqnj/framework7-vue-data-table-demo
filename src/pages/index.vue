@@ -6,7 +6,7 @@
             </f7-nav-left>
             <div class="title">Ourbits管理</div>
             <f7-nav-right>
-              <f7-row v-if="$device.desktop || $device.ipad">
+              <f7-row v-show="desktop_large">
                 <f7-link href="/about/" text="管理"></f7-link>
                 <f7-link href="/about/" text="同步"></f7-link>
                <f7-link href="/about/" text="设置"></f7-link>
@@ -50,24 +50,23 @@ export default {
   data() {
     return {
       login_name: 'kevinqq',
+      	  screenWidth: document.body.clientWidth,
     }
   },
   created() {},
   mounted() {
-
+	window.onresize = ()=> { 
+		return this.screenWidth = document.body.clientWidth
+         }
   },
   beforeDestroy() {},
   computed: {
-    name1() {
-      return ;
+    desktop_large() {
+      return (this.$device.desktop || this.$device.ipad) && this.screenWidth>768
     }
   },
   methods: {
     login() {
-      let prompt=`输入管理系统的用户名、密码<br>没有账号？<f7-link href="#">注 册</f7-link>`
-      this.$f7.dialog.login(prompt, '登录', (username, password)=> {
-          this.$f7.dialog.alert('Thank you!<br>Username:' + username + '<br>Password:' + password)
-    },)
   },
 }
 
