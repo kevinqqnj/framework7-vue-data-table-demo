@@ -10,6 +10,8 @@ Including: navbar, tabs, side-pannel
 - use routable Tabs, easily loading component pages
 - hide navbar on-scroll, expand view on mobile
 
+Live Demo: https://ourbits.herokuapp.com/v2
+
 ![home](傲游截图20180121160548.png "home")
 
 ## Login
