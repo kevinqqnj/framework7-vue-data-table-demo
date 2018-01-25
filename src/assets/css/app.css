@@ -32,14 +32,18 @@ Your custom styles go here
     transform: translate3d(0,-64px,0);
     }
 /*表格紧凑*/
+.md .data-table td.label-cell, .md .data-table th.label-cell .action-cell {
+  padding-right: 5px;
+}
 .md .data-table td, .md .data-table th {
     padding-left: 3px;
     padding-right: 3px;
   }
-.md .data-table td.label-cell, .md .data-table th.label-cell {
-    padding-left: 5px;
-    padding-right: 5px;
+.md .data-table td.label-cell, .md .data-table th.label-cell :not(.action-cell) {
+    padding-left: 3px;
+    padding-right: 3px;
 }
+
 .md .dialog-buttons-vertical .dialog-buttons .dialog-button {
 	    text-transform: none;
 	    text-align: center;
@@ -59,6 +63,9 @@ Your custom styles go here
 .btn-mb {
   margin-bottom: 8px;
 }
-
+/*show ourbits banner*/
+li.banner .item-title {
+  white-space: pre-wrap;
+}
 
 

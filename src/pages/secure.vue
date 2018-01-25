@@ -4,22 +4,22 @@
             <f7-col width="100" tablet-width="50">
                 <f7-list inline-labels no-hairlines-md>
                     <!-- :inline-labels="$device.desktop"> -->
-                    <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}">
+                    <f7-list-item smart-select :smart-select-params="{openIn: 'popover'}" name="secure.display_info">
                         <f7-icon icon="fas fa-user" slot="media"></f7-icon>
-                        <f7-label> 选择保种员:</f7-label>
+                        <f7-label> 保种员:</f7-label>
                         <select name="display_sr" v-model="filters_all.display_info.selected">
-                            <option :value="index" v-for="(sr, index) of filters_all.display_info.data" :selected="index==filters_all.display_info.selected">{{sr}}</option>
+                            <option :value="index" v-for="(sr, index) of display_sr_info" :selected="index==filters_all.display_info.selected">{{sr.ob_username}}</option>
                         </select>
                     </f7-list-item>
                     <f7-list-item>
                         <f7-icon icon="fas fa-chart-pie" slot="media"></f7-icon>
                         <f7-label>保种空间:</f7-label>
                         <f7-label>分配200
-                            <f7-badge color="green">1.0 / 3TB</f7-badge>
+                            <f7-badge color="green">1.0TB</f7-badge>
                             <f7-progressbar color="green" :progress="20" class="my-progressbar"></f7-progressbar>
                         </f7-label>
                         <f7-label>认领200
-                            <f7-badge color="red">3.0 / 3TB</f7-badge>
+                            <f7-badge color="red">3.0TB</f7-badge>
                             <f7-progressbar color="red" :progress="80"></f7-progressbar>
                         </f7-label>
                     </f7-list-item>
@@ -54,18 +54,17 @@
                         </f7-col>
                     </f7-row>
                 </f7-block>
-
-        <!-- Filters for query 过滤器 -->
-        <!-- <f7-block> -->
-            <f7-row class="data-table-actions">
-                <f7-col width="50" tablet-width="20" v-for="(filter, key, index) in filters_all" :key="index">
-                    <f7-link popover-open="#pop-filter" @click="filter_open(key)">
-                        {{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
-                </f7-col>
-            </f7-row>
-        <!-- </f7-block> -->
-    </f7-col>
-</f7-row>
+                <!-- Filters for query 过滤器 -->
+                <f7-block>
+                    <f7-row class="data-table-actions">
+                        <f7-col width="50" tablet-width="20" v-for="(filter, key, index) in filters_all" :key="index">
+                            <f7-link popover-open="#pop-filter" @click="filter_open(key)">
+                                {{filter.title}} {{filter.data[filter.selected]}} <i class="fas fa-filter fa-fw"></i></f7-link>
+                        </f7-col>
+                    </f7-row>
+                </f7-block>
+            </f7-col>
+        </f7-row>
         <div class="data-table data-table-init card" id="data_table">
             <div class="card-header">
                 <div class="data-table-header">
@@ -100,8 +99,7 @@
                             <th class="checkbox-cell" title="反选/全选">
                                 <f7-checkbox />
                             </th>
-                            <th v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'label-cell sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell '+item.titleClass : item.titleClass"
-                                @click="set_sortkey(item.name)">{{item.title}}
+                            <th v-for="item in fields" :key="item.name" :class="(item.name=='id') ? 'label-cell sortable-cell sortable-cell-active' : (item.sortField!=undefined) ? 'sortable-cell '+item.titleClass : item.titleClass" @click="set_sortkey(item.name)">{{item.title}}
                             </th>
                         </tr>
                     </thead>
@@ -129,7 +127,7 @@
                                 <f7-link popover-open="#pop-action" @click="action_open(item.id, 'assign', -1, item.self_downloaded)">
                                     <span v-html="srsToIcon(item.self_downloaded)"></span></f7-link>
                             </td>
-                            <td class="numeric-cell">{{ item.seed_since | datefilter }}</td>
+                            <td class="label-cell">&nbsp;{{ item.seed_since | datefilter }}</td>
                             <td class="numeric-cell" v-html="strToInput(item.desc)"></td>
                             <td class="numeric-cell" v-html="strToInput(item.title)"></td>
                             <td class="numeric-cell tablet-only">{{ item.download_size }}</td>
@@ -142,23 +140,23 @@
                 </table>
             </div>
         </div>
-       <!--  <f7-popover class="popover-menu popover-max-height" id="pop-filter111">
+        <!--  <f7-popover class="popover-menu popover-max-height" id="pop-filter111">
             <f7-list>
                 <f7-list-item radio :title="sr" v-for="(sr, index) in filter_data.data" :key="index" :checked="index==filter_data.selected" name="radio_group_filter" class="popover-close" @change="filter_select(filter_data.current_filter, index)" />
             </f7-list>
         </f7-popover> -->
         <f7-popover class="popover-menu popover-max-height" id="pop-filter">
             <f7-list>
-                <f7-list-item link="#" :title="sr=='-'?'<不限>':sr" v-for="(sr, index) in filter_data.data" :key="index" class="popover-close" :checked="index==filter_data.selected"
-                @click="filter_select(filter_data.current_filter, index)" :class="filter_data.selected==index ? 'color-blue' : ''">
+                <f7-list-item link="#" :title="sr=='-'?'<不限>':sr" v-for="(sr, index) in filter_data.data" :key="index" class="popover-close" :checked="index==filter_data.selected" @click="filter_select(filter_data.current_filter, index)" :class="filter_data.selected==index ? 'color-blue' : ''">
                 </f7-list-item>
             </f7-list>
         </f7-popover>
         <f7-popover class="popover-menu popover-max-height" id="pop-action">
             <f7-list>
                 <f7-list-item :title="sr.ob_username ? sr.ob_username : sr" v-for="(sr, index) in action_data.data" :key="index" class="popover-close">
-                    <f7-link v-show="action_data.type=='undo'" icon="fas fa-undo fa-pull-right color-red" @click="" title="快速撤销分配" />
-                    <f7-link v-show="action_data.type=='assign'" icon="fas fa-paper-plane fa-pull-right color-blue" @click="" title="快速分配种子" />
+                    <f7-link v-show="action_data.type=='undo'" @click="" title="快速撤销分配" text="撤销 " text-color="red"><i class="fas fa-undo fa-pull-right" data-fa-transform="" /></f7-link>
+                    <f7-link v-show="action_data.type=='assign'" @click="" title="快速分配种子" text="分配 " text-color="orange">
+                        <i class="fas fa-paper-plane fa-pull-right" data-fa-transform="" /></f7-link>
                 </f7-list-item>
             </f7-list>
         </f7-popover>
@@ -168,7 +166,7 @@
                 </f7-list-item>
             </f7-list>
         </f7-popover>
-        <f7-popover class="popover-menu" id="pop-ob-id">
+        <!--         <f7-popover class="popover-menu" id="pop-ob-id">
             <f7-list>
                 <f7-list-item link="/form/" popover-close title="Forms"></f7-list-item>
                 <f7-list-item link="#" popover-close :title="'ID: '+seed_selected" @click.native="pop_menu"></f7-list-item>
@@ -177,8 +175,8 @@
                 </f7-list-item>
                 <f7-list-item link="#" popover-close class="panel-open" open-panel="left" title="Side Panels"></f7-list-item>
             </f7-list>
-        </f7-popover>
-        <f7-block-title id="_footer">选择种子来认领/分配/报错 点击种子打开详情 点击表头排序</f7-block-title>
+        </f7-popover> -->
+        <!-- <f7-block-title id="_footer">选择种子来认领/分配/报错 点击种子打开详情 点击表头排序</f7-block-title> -->
     </div>
 </template>
 <script>
@@ -251,21 +249,21 @@ export default {
                 {
                     name: 'securer_assigned',
                     title: '已分配',
-                    titleClass: 'label-cell',
+                    titleClass: 'label-cell action-cell',
                 },
                 {
                     name: 'securer_accepted',
                     title: '已认领',
-                    titleClass: 'label-cell',
+                    titleClass: 'label-cell action-cell',
                 },
                 {
                     name: 'self_downloaded',
                     title: '自行下载',
-                    titleClass: 'self_downloaded',
+                    titleClass: 'label-cell action-cell',
                 },
                 {
                     name: 'seed_since',
-                    title: '发布时间',
+                    title: '发布',
                     titleClass: 'label-cell',
                     // callback: toSmartDate,
                     sortField: 'Ob.seed_since',
@@ -490,6 +488,23 @@ export default {
                 page: [...Array(last_page)].map((v, k) => k + 1)
             }
         },
+        user_info() {
+            return this.$store.state.user_info
+        },
+        securers_info() {
+            let srs = JSON.parse(JSON.stringify(this.$store.state.securers_info)); // deep-copy
+            return srs.sort(function(a, b) {
+                return a.ob_username[0] < b.ob_username[0] ? -1 : 1
+            }); // 以Ob_username第一个字母排序
+        },
+        display_sr_info() {
+            let srs = JSON.parse(JSON.stringify(this.$store.state.securers_info)); // deep-copy
+            srs.sort(function(a, b) {
+                return a.ob_username[0] < b.ob_username[0] ? -1 : 1
+            }); // 以Ob_username第一个字母排序
+            srs.splice(0, 0, { ob_username: '< 不限 >' }); // 第一个选项为 "不限""
+            return srs
+        },
     },
     methods: {
         query_data_from_api(page) {
@@ -512,7 +527,7 @@ export default {
                 });
         },
         display_sr_selected() {
-            this.filters_all.gffbz.selected = document.getElementById('display_sr').value
+            //       this.filters_all.gffbz.selected = document.getElementById('display_sr').value
         },
         check_click(index, id, size) {
             if (this.vuetable.selectedTo.indexOf(id) > -1) {
@@ -649,4 +664,5 @@ export default {
         },
     }
 };
+
 </script>

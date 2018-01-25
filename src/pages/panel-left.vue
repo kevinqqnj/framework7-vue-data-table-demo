@@ -3,7 +3,7 @@
         <f7-navbar class="bg-color-blue">
             <f7-block>
                 <div class="chip">
-                    <div class="chip-media"><img :src="imgurl"></div>
+                    <div class="chip-media"><img src="/static/img/logo.jpg"></div>
                     <div class="chip-label text-color-white">Kevin QQ</div>
                 </div>
             </f7-block>
@@ -24,7 +24,7 @@ export default {
     name: 'panel-left',
     data() {
         return {
-            imgurl: require('../assets/images/logo.jpg'),
+  //          imgurl: require('../assets/images/logo.jpg'),
         }
     },
 };

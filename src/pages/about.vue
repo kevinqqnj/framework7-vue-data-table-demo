@@ -1,16 +1,84 @@
 <template>
-  <f7-page>
-    <f7-navbar title="About F7" back-link="Back" sliding></f7-navbar>
-    <f7-block-title>Welcome to Framework7</f7-block-title>
-    <f7-block strong>
-      <p>Framework7 - is a free and open source HTML mobile framework to develop hybrid mobile apps or web apps with iOS or Android (Material) native look and feel. It is also an indispensable prototyping apps tool to show working app prototype as soon as possible in case you need to. Framework7 is created by Vladimir Kharlampidi (iDangero.us).</p>
-      <p>The main approach of the Framework7 is to give you an opportunity to create iOS and Android (Material) apps with HTML, CSS and JavaScript easily and clear. Framework7 is full of freedom. It doesn't limit your imagination or offer ways of any solutions somehow. Framework7 gives you freedom!</p>
-      <p>Framework7 is not compatible with all platforms. It is focused only on iOS and Android (Material) to bring the best experience and simplicity.</p>
-      <p>Framework7 is definitely for you if you decide to build iOS and Android hybrid app (PhoneGap) or web app that looks like and feels as great native iOS or Android (Material) apps.</p>
-    </f7-block>
-  </f7-page>
+    <f7-page>
+        <f7-navbar title="About" back-link="Back" sliding>
+            <f7-nav-right>
+                <f7-link icon="icon-bars" open-panel="left"></f7-link>
+            </f7-nav-right>
+        </f7-navbar>
+        <f7-block-title>版本历史</f7-block-title>
+        <f7-block inner>
+            <p>20180122 v2.0.0</p>
+             新版界面，方便手机使用，表格速度加快。
+             <f7-link href="/v1" external target="_blank">查看旧版</f7-link>
+            <br />
+             <p>20171115 v0.7.X</p>
+             关联Transmission，认领时自动下载，撤销时自动删除
+            <br />
+             <p>20171115 v0.7.0</p>
+             点击种子ID，可以汇报错误种子
+            <br />
+             <p>20171110 v0.6.9</p>
+             以下不需要保种了：单剧集、remux、OurPad、iLoveTV、Title以“HDPxxx”结尾
+            <br />
+             <p>20171030 v0.6.x</p>
+             根据做种情况，计算工资
+            <br />
+             <p>20171019 v0.5.x</p>
+             显示所有做种情况，包括没有分配没有认领的
+            管理员专用菜单
+            <br />
+            <p>20171019 v0.4.6</p>
+            “红点”显示有未领的任务；保种员概况，修正数据错位问题
+            <br />
+            <p>20171019 v0.4.5</p>
+            可以查看、回复反馈
+            <br />
+            <p>20171019 v0.4.4</p>
+            新增反馈功能，在首页直接点问号反馈
+            <br />
+            <p>20171018 v0.4.1</p>
+            大改版！新增管理员激活、屏蔽用户功能
+            <br />
+    		<p>20171018 v0.4</p>
+            大改版！认领界面更多选择，更直观，可以方便生成下载列表
+            <br />
+            <p>20171011 v0.3.5</p>
+            可以使用撤销功能，撤销之前已领的保种任务；本地校验是否为管理员；同步种子可选同步页数
+            <br />
+            <p>20171010 v0.3.1</p>
+            自助认领系统: 管理员可以直接分派任务给保种员
+            <br /> 认领我的任务： 可以检索当前已分配给我，但还没有认领的种子列表，方便直接复制、认领
+            <br />
+            <p>20171010 v0.3</p>
+            自助认领系统优化，一键认领自己喜欢的官种。可以生成种子ID列表、种子下载列表，并能一键复制。设置页可以修改Ourbits Passkey
+            <br />
+            <p>20171009 v0.2.4</p> 新功能：自助认领新发布的、且无保种员认领的官方种子，可以按发布组过滤
+            <br />
+            <p>20171008 v0.2.3</p> 保种员列表可以显示工资; 认领、分配任务页面，可以选择日期；提供保种种子列表的大小试算
+            <br />
+            <p>20171006 v0.2.2</p> 设置页面，用户可以修改自己密码，修改最低最大保种容量
+            <br />
+            <p>20171005 v0.2.1</p> 修复Admin界面编辑用户资料Crash问题
+            <br />
+            <p>20171005 v0.2</p> 保种员页面，彩色进度条显示已保种容量的比例
+            <br />
+            <p>20170930 v0.1</p> 第一版，保种员可以认领种子，管理员可以分配种子
+            <br />
+        </f7-block>
+        <f7-block inner>
+            <p>Contact: 17197602</p>
+
+        </f7-block>
+
+    </f7-page>
 </template>
+<style>
+
+</style>
 <script>
- export default {
-  };
+
+export default {
+    name: 'about',
+}
+
 </script>
